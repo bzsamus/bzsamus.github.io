@@ -86,7 +86,7 @@ const VISIT_SEED = (() => {
 })();
 
 /* ── Random mode — fresh every page load ────────────────────────────────── */
-const MODE_KEYS = ['forest', 'azure', 'lotus'];
+const MODE_KEYS = ['forest', 'azure', 'lotus', 'orbit'];
 const INITIAL_MODE = MODE_KEYS[Math.floor(Math.random() * MODE_KEYS.length)];
 
 /* ── Artwork images ──────────────────────────────────────────────────────── */
@@ -105,6 +105,7 @@ const MODES = {
   forest: { label:'FOREST', darkBg:'#0b1410', lightBg:'#f3ede0', acc:'#b87d2a', acc2:'#6db88a', rgb:[184,125,42]  },
   azure:  { label:'AZURE',  darkBg:'#080f1c', lightBg:'#e8f3fb', acc:'#3d9fc0', acc2:'#e0b840', rgb:[61,159,192]   },
   lotus:  { label:'LOTUS',  darkBg:'#060d0b', lightBg:'#e8f5f1', acc:'#2daa88', acc2:'#d0809a', rgb:[45,170,136]   },
+  orbit:  { label:'ORBIT',  darkBg:'#060912', lightBg:'#edf0fb', acc:'#58c8ea', acc2:'#a87cd4', rgb:[88,200,234]   },
 };
 
 /* ── Theme helper ────────────────────────────────────────────────────────── */
