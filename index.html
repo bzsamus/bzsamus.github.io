@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>mr5am</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet" />
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { background: #0b1410; color: #f0ece4; scroll-behavior: smooth; }
+    body { overflow-x: hidden; font-family: 'Space Mono', monospace; }
+    #root { position: relative; z-index: 1; }
+    ::selection { background: #c9923a; color: #000; }
+    ::-webkit-scrollbar { width: 2px; }
+    ::-webkit-scrollbar-track { background: #0b1410; }
+    ::-webkit-scrollbar-thumb { background: var(--acc, #c9923a); }
+
+    /* ── Ken Burns animations ──────────────────────────────────────────── */
+    @keyframes kb0 { 0%{transform:scale(1)   translate(0%,0%)}   100%{transform:scale(1.12) translate(-2%,-1%)} }
+    @keyframes kb1 { 0%{transform:scale(1.1)  translate(1.5%,0%)} 100%{transform:scale(1)    translate(-1%,2%)}  }
+    @keyframes kb2 { 0%{transform:scale(1)    translate(2%,1%)}   100%{transform:scale(1.14) translate(-1%,-2%)} }
+    @keyframes kb3 { 0%{transform:scale(1.08) translate(-1%,2%)}  100%{transform:scale(1)    translate(2%,-1%)}  }
+    @keyframes kb4 { 0%{transform:scale(1)    translate(0%,2%)}   100%{transform:scale(1.1)  translate(-2%,-2%)} }
+    @keyframes kb5 { 0%{transform:scale(1.06) translate(-2%,-1%)} 100%{transform:scale(1)    translate(1%,2%)}   }
+
+    /* ── Glitch layers ───────────────────────────────────────────────── */
+    .gl { position: relative; display: inline-block; }
+    .gl::before, .gl::after {
+      content: attr(data-t); position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%; font: inherit; pointer-events: none;
+    }
+    .gl::before { color: var(--acc, #c9923a); animation: gl1 7s infinite; clip-path: inset(0 0 100% 0); }
+    .gl::after  { color: var(--acc2,#7ecfa0); animation: gl2 7s infinite; clip-path: inset(0 0 100% 0); }
+    @keyframes gl1 {
+      0%,89%,100%{clip-path:inset(0 0 100% 0);transform:translate(0)}
+      90%{clip-path:inset(20% 0 42% 0);transform:translate(-7px,2px)}
+      91%{clip-path:inset(58% 0 14% 0);transform:translate(7px,-2px)}
+      92%{clip-path:inset(0 0 100% 0);transform:translate(0)}
+    }
+    @keyframes gl2 {
+      0%,84%,100%{clip-path:inset(0 0 100% 0);transform:translate(0)}
+      85%{clip-path:inset(44% 0 28% 0);transform:translate(7px,-2px)}
+      86%{clip-path:inset(0 0 100% 0);transform:translate(0)}
+    }
+
+    /* ── Scroll reveal ───────────────────────────────────────────────── */
+    .rv { opacity:0; transform:translateY(40px); transition:opacity .9s ease,transform .9s cubic-bezier(.22,1,.36,1); }
+    .rv.in { opacity:1; transform:translateY(0); }
+
+    /* ── Horizontal scroll ───────────────────────────────────────────── */
+    .hscroll { display:flex; overflow-x:auto; gap:14px; padding:0 32px 20px; scroll-snap-type:x mandatory; scrollbar-width:thin; scrollbar-color:var(--acc,#c9923a) transparent; }
+    .hscroll::-webkit-scrollbar { height:2px; }
+    .hscroll::-webkit-scrollbar-thumb { background:var(--acc,#c9923a); }
+
+    /* ── Marquee ─────────────────────────────────────────────────────── */
+    @keyframes mq { from{transform:translateX(0)} to{transform:translateX(-50%)} }
+
+    /* ── Spin ────────────────────────────────────────────────────────── */
+    @keyframes spin  { from{transform:rotate(0deg)}   to{transform:rotate(360deg)}  }
+    @keyframes spinr { from{transform:rotate(0deg)}   to{transform:rotate(-360deg)} }
+
+    /* ── Tweaks panel ────────────────────────────────────────────────── */
+    .tp { position:fixed; bottom:24px; right:24px; z-index:9999; background:#0d150e; border-radius:4px; padding:20px; width:264px; font-family:'Space Mono',monospace; font-size:11px; box-shadow:0 20px 60px #000a; }
+    .tp label { display:block; color:#4a5a4d; font-size:9px; letter-spacing:.12em; text-transform:uppercase; margin-bottom:5px; margin-top:12px; }
+    .tp input[type=text] { width:100%; background:#111; border:1px solid #1e2a20; color:#f0ece4; padding:6px 8px; font-family:'Space Mono',monospace; font-size:11px; border-radius:2px; }
+    .tp .chips { display:flex; gap:6px; flex-wrap:wrap; }
+    .tp .chip { padding:5px 10px; border-radius:2px; border:1px solid #1e2a20; cursor:pointer; color:#4a5a4d; font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.1em; transition:all .2s; background:transparent; }
+    .tp .chip.on { border-color:var(--acc,#c9923a); background:color-mix(in srgb,var(--acc,#c9923a) 16%,transparent); color:var(--acc,#c9923a); }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ── Visit seed ─────────────────────────────────────────────────────────── */
+const VISIT_SEED = (() => {
+  const k = 'mr5am_seed_v3';
+  const e = sessionStorage.getItem(k);
+  if (e) return parseInt(e);
+  const s = Math.floor(Math.random() * 1e8);
+  sessionStorage.setItem(k, s);
+  return s;
+})();
+
+/* ── Artwork images ──────────────────────────────────────────────────────── */
+const ART_IMGS = [
+  'uploads/mr5am_torii_flowers_sun_rays_sun_beams_in_the_style_of_multi-_2fb4ccc6-0778-433b-80f7-a274c8c3e6ae_2.png',
+  'uploads/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_3eaab53c-c771-4d6c-8333-e797aa8bc109_2.png',
+  'uploads/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_9c58bc0e-17e6-4210-86e1-5b6eaccb3a08_2.png',
+  'uploads/mr5am_Dual_scenery_above_and_below_the_water_surface._Above_t_ed2ed109-eb7d-479b-8f01-c558e15189da_2.png',
+  'uploads/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_347cd1e8-cbeb-4074-9730-834b0a65c0ec_3.png',
+  'uploads/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_9c58bc0e-17e6-4210-86e1-5b6eaccb3a08_3.png',
+];
+// Preload
+ART_IMGS.forEach(s => { const i = new Image(); i.src = s; });
+
+/* ── Modes ───────────────────────────────────────────────────────────────── */
+const MODES = {
+  forest: { label:'FOREST', bg:'#0b1410', acc:'#c9923a', acc2:'#7ecfa0', rgb:[201,146,58]  },
+  azure:  { label:'AZURE',  bg:'#080f1c', acc:'#5ab8d4', acc2:'#f0c860', rgb:[90,184,212]  },
+  lotus:  { label:'LOTUS',  bg:'#060d0b', acc:'#4ecba8', acc2:'#e8a4b8', rgb:[78,203,168]  },
+};
+
+/* ── Works ───────────────────────────────────────────────────────────────── */
+const WORKS_RAW = [
+  { id:1, title:'Torii Garden',        type:'Generative Art',  year:'2025', tag:'ART',   jp:'鳥居の庭', img:ART_IMGS[0] },
+  { id:2, title:'Below & Above',       type:'Generative Art',  year:'2025', tag:'ART',   jp:'水面',     img:ART_IMGS[3] },
+  { id:3, title:'Threshold',           type:'Anime Short',     year:'2024', tag:'VIDEO', jp:'閾値',     img:ART_IMGS[4] },
+  { id:4, title:'Azure City',          type:'Generative Art',  year:'2024', tag:'ART',   jp:'蒼天',     img:ART_IMGS[1] },
+  { id:5, title:'Moving Architecture', type:'Generative Art',  year:'2024', tag:'ART',   jp:'動く城',   img:ART_IMGS[2] },
+  { id:6, title:'Reclaimed',           type:'Generative Art',  year:'2023', tag:'ART',   jp:'自然回帰', img:ART_IMGS[5] },
+  { id:7, title:'Pulse Engine',        type:'Generative Music',year:'2023', tag:'MUSIC', jp:'脈動',     img:null },
+];
+const WORKS = [...WORKS_RAW].sort((a,b) =>
+  Math.sin(VISIT_SEED*a.id*9301+49297) - Math.sin(VISIT_SEED*b.id*9301+49297)
+);
+
+const TWEAKS_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "name": "mr5am",
+  "tagline": "generative art · anime · music · games",
+  "mode": "forest"
+}/*EDITMODE-END*/;
+
+/* ── useReveal ───────────────────────────────────────────────────────────── */
+function useReveal(margin = '-60px') {
+  const ref = useRef();
+  useEffect(() => {
+    const el = ref.current; if (!el) return;
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { el.classList.add('in'); obs.disconnect(); }
+    }, { rootMargin: margin });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+  return ref;
+}
+
+/* ── Artwork Slideshow BG ────────────────────────────────────────────────── */
+function ArtworkSlideshowBG({ mode }) {
+  const cfg = MODES[mode];
+  const startIdx = VISIT_SEED % ART_IMGS.length;
+  const [active, setActive] = useState(0);
+  const [slots, setSlots] = useState([
+    { img: startIdx, animKey: 0 },
+    { img: (startIdx + 1) % ART_IMGS.length, animKey: 1 },
+  ]);
+  const nextRef = useRef((startIdx + 2) % ART_IMGS.length);
+
+  useEffect(() => {
+    const iv = setInterval(() => {
+      const incoming = (active + 1) % 2;
+      const newImg = nextRef.current;
+      nextRef.current = (newImg + 1) % ART_IMGS.length;
+      setSlots(s => s.map((sl, i) =>
+        i === incoming ? { img: newImg, animKey: sl.animKey + 2 } : sl
+      ));
+      setActive(incoming);
+    }, 9000);
+    return () => clearInterval(iv);
+  }, [active]);
+
+  return (
+    <div style={{ position:'fixed', inset:0, zIndex:0, overflow:'hidden', background:'#000' }}>
+      {slots.map((sl, i) => (
+        <div key={sl.animKey} style={{
+          position:'absolute', inset:0,
+          opacity: i === active ? 1 : 0,
+          transition:'opacity 2.4s ease',
+          zIndex: i === active ? 2 : 1,
+        }}>
+          <img
+            src={ART_IMGS[sl.img]} alt=""
+            style={{
+              width:'100%', height:'100%', objectFit:'cover', display:'block',
+              transformOrigin:'center center',
+              animation:`kb${sl.img % 6} 18s ease-in-out both`,
+            }}
+          />
+        </div>
+      ))}
+      {/* Overlays — darken for readability */}
+      <div style={{ position:'absolute', inset:0, zIndex:3, background:'rgba(0,0,0,0.46)' }} />
+      <div style={{ position:'absolute', inset:0, zIndex:4,
+        background:'linear-gradient(180deg, rgba(0,0,0,0.28) 0%, rgba(0,0,0,0.05) 35%, rgba(0,0,0,0.5) 80%, rgba(0,0,0,0.85) 100%)' }} />
+      {/* Subtle color tint from current mode */}
+      <div style={{ position:'absolute', inset:0, zIndex:5,
+        background:`radial-gradient(ellipse 80% 60% at 70% 40%, ${cfg.acc}12, transparent 65%)`,
+        transition:'background 1.5s ease', pointerEvents:'none' }} />
+    </div>
+  );
+}
+
+/* ── Firefly Canvas ──────────────────────────────────────────────────────── */
+function FireflyCanvas({ mode }) {
+  const ref = useRef();
+  const rafRef = useRef();
+  const modeRef = useRef(mode);
+  useEffect(() => { modeRef.current = mode; }, [mode]);
+
+  useEffect(() => {
+    const canvas = ref.current;
+    const ctx = canvas.getContext('2d');
+    let W = canvas.width = window.innerWidth;
+    let H = canvas.height = window.innerHeight;
+    const onResize = () => { W = canvas.width = window.innerWidth; H = canvas.height = window.innerHeight; };
+    window.addEventListener('resize', onResize);
+
+    // Fireflies — slow, organic, breathing
+    const N = 38 + Math.floor(Math.sin(VISIT_SEED) * 8 + 8);
+    const flies = Array.from({ length: N }, () => ({
+      x: Math.random() * W,
+      y: Math.random() * H,
+      vx: (Math.random() - 0.5) * 0.22,
+      vy: -(Math.random() * 0.18 + 0.04), // slow upward drift
+      r: Math.random() * 2.2 + 0.8,
+      phase: Math.random() * Math.PI * 2,
+      freq: Math.random() * 0.4 + 0.2,
+      size: Math.random() * 14 + 6, // glow radius
+    }));
+
+    let t = 0;
+    const draw = () => {
+      t += 0.012;
+      ctx.clearRect(0, 0, W, H);
+      const cfg = MODES[modeRef.current];
+      const [pr, pg, pb] = cfg.rgb;
+
+      flies.forEach(f => {
+        // Drift with gentle wander
+        f.x += f.vx + Math.sin(t * 0.3 + f.phase) * 0.08;
+        f.y += f.vy + Math.cos(t * 0.25 + f.phase * 1.3) * 0.06;
+        f.vx += (Math.random() - 0.5) * 0.008;
+        f.vy += (Math.random() - 0.5) * 0.006;
+        f.vx *= 0.996; f.vy *= 0.996;
+        // Gentle wrap
+        if (f.x < -40) f.x = W + 40;
+        if (f.x > W + 40) f.x = -40;
+        if (f.y < -80) f.y = H + 40;
+        if (f.y > H + 40) f.y = -20;
+
+        // Breathing opacity
+        const alpha = (Math.sin(t * f.freq + f.phase) * 0.5 + 0.5) * 0.6 + 0.08;
+
+        // Outer glow — soft and large
+        const g = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.size * 2);
+        g.addColorStop(0, `rgba(${pr},${pg},${pb},${alpha * 0.55})`);
+        g.addColorStop(0.4, `rgba(${pr},${pg},${pb},${alpha * 0.2})`);
+        g.addColorStop(1, `rgba(${pr},${pg},${pb},0)`);
+        ctx.beginPath(); ctx.fillStyle = g;
+        ctx.arc(f.x, f.y, f.size * 2, 0, Math.PI * 2); ctx.fill();
+
+        // Bright core
+        const g2 = ctx.createRadialGradient(f.x, f.y, 0, f.x, f.y, f.r * 1.8);
+        g2.addColorStop(0, `rgba(255,255,240,${alpha * 0.95})`);
+        g2.addColorStop(1, `rgba(${pr},${pg},${pb},0)`);
+        ctx.beginPath(); ctx.fillStyle = g2;
+        ctx.arc(f.x, f.y, f.r * 1.8, 0, Math.PI * 2); ctx.fill();
+      });
+
+      rafRef.current = requestAnimationFrame(draw);
+    };
+    draw();
+    return () => { window.removeEventListener('resize', onResize); cancelAnimationFrame(rafRef.current); };
+  }, []);
+
+  return <canvas ref={ref} style={{ position:'fixed', inset:0, zIndex:6, pointerEvents:'none' }} />;
+}
+
+/* ── Nav ─────────────────────────────────────────────────────────────────── */
+function Nav({ name, mode, setMode }) {
+  const cfg = MODES[mode];
+  const [sc, setSc] = useState(false);
+  useEffect(() => {
+    const fn = () => setSc(window.scrollY > 50);
+    window.addEventListener('scroll', fn);
+    return () => window.removeEventListener('scroll', fn);
+  }, []);
+  return (
+    <nav style={{
+      position:'fixed', top:0, left:0, right:0, zIndex:100,
+      padding:'14px 32px', display:'flex', alignItems:'center', justifyContent:'space-between',
+      background: sc ? `${cfg.bg}f0` : 'transparent',
+      backdropFilter: sc ? 'blur(14px)' : 'none',
+      borderBottom:`1px solid ${sc ? cfg.acc+'28' : 'transparent'}`,
+      transition:'all .4s',
+    }}>
+      <span style={{ fontFamily:'Space Mono', fontSize:11, color:cfg.acc, letterSpacing:'.14em' }}>
+        {name}<span style={{ color:'rgba(255,255,255,0.2)' }}> / {new Date().getFullYear()}</span>
+      </span>
+      <div style={{ display:'flex', gap:6 }}>
+        {Object.entries(MODES).map(([k,m]) => (
+          <button key={k} onClick={() => setMode(k)} style={{
+            fontFamily:'Space Mono', fontSize:9, letterSpacing:'.12em', padding:'4px 11px',
+            borderRadius:2, cursor:'pointer', transition:'all .2s',
+            border:`1px solid ${mode===k ? m.acc : 'rgba(255,255,255,0.08)'}`,
+            background: mode===k ? m.acc+'28' : 'transparent',
+            color: mode===k ? m.acc : 'rgba(255,255,255,0.25)',
+          }}>{m.label}</button>
+        ))}
+      </div>
+      <div style={{ display:'flex', gap:28 }}>
+        {['work','about','contact'].map(s => (
+          <a key={s} href={`#${s}`} style={{
+            fontFamily:'Space Mono', fontSize:9, letterSpacing:'.14em', textTransform:'uppercase',
+            color:'rgba(255,255,255,0.3)', textDecoration:'none', transition:'color .2s',
+          }}
+          onMouseEnter={e => e.target.style.color = cfg.acc}
+          onMouseLeave={e => e.target.style.color = 'rgba(255,255,255,0.3)'}
+          >{s}</a>
+        ))}
+      </div>
+    </nav>
+  );
+}
+
+/* ── Hero ────────────────────────────────────────────────────────────────── */
+function Hero({ name, mode }) {
+  const cfg = MODES[mode];
+  const [vis, setVis] = useState(false);
+  const [discIdx, setDiscIdx] = useState(0);
+  const discs = ['painterly worlds', 'generative art', 'anime films', 'original music', 'indie games', 'web systems'];
+  useEffect(() => { setTimeout(() => setVis(true), 150); }, []);
+  useEffect(() => {
+    const iv = setInterval(() => setDiscIdx(i => (i+1) % discs.length), 2600);
+    return () => clearInterval(iv);
+  }, []);
+
+  const tr = (d) => ({
+    opacity: vis ? 1 : 0,
+    transform: vis ? 'none' : 'translateY(32px)',
+    transition: `opacity .9s ease ${d}s, transform 1s cubic-bezier(.22,1,.36,1) ${d}s`,
+  });
+
+  return (
+    <section style={{ minHeight:'100vh', display:'flex', flexDirection:'column', justifyContent:'flex-end', padding:'0 32px 72px', position:'relative', overflow:'hidden' }}>
+
+      {/* Decorative rings */}
+      <div style={{ position:'absolute', top:'48%', right:'8%', width:200, height:200, marginTop:-100, opacity: vis ? .5 : 0, transition:'opacity 1.5s ease 1.2s', pointerEvents:'none' }}>
+        <div style={{ position:'absolute', inset:0, border:`1px solid ${cfg.acc}35`, borderRadius:'50%', animation:'spin 24s linear infinite' }} />
+        <div style={{ position:'absolute', inset:22, border:`1px solid ${cfg.acc}20`, borderRadius:'50%', animation:'spinr 16s linear infinite' }} />
+        <div style={{ position:'absolute', inset:50, border:`1px solid ${cfg.acc}14`, borderRadius:'50%', animation:'spin 32s linear infinite' }} />
+        <div style={{ position:'absolute', top:'50%', left:0, right:0, height:1, background:`linear-gradient(90deg,transparent,${cfg.acc}50,transparent)` }} />
+        <div style={{ position:'absolute', left:'50%', top:0, bottom:0, width:1, background:`linear-gradient(180deg,transparent,${cfg.acc}50,transparent)` }} />
+        <div style={{ position:'absolute', top:4, left:'50%', marginLeft:-4, width:8, height:8, background:cfg.acc, borderRadius:'50%', boxShadow:`0 0 10px ${cfg.acc}, 0 0 20px ${cfg.acc}66` }} />
+      </div>
+
+      {/* JP accent */}
+      <div style={{ position:'absolute', top:88, right:32, textAlign:'right', opacity: vis ? 1 : 0, transition:'opacity 1.4s ease 2s', pointerEvents:'none' }}>
+        {['創造者','芸術家','製作者'].map((w,i) => (
+          <div key={i} style={{ fontFamily:'Noto Sans JP', fontWeight:900, fontSize:11, color:`rgba(255,255,255,0.18)`, letterSpacing:'.06em', lineHeight:2.1 }}>{w}</div>
+        ))}
+      </div>
+
+      {/* Visit ID */}
+      <div style={{ position:'absolute', top:90, left:32, opacity: vis ? 0.4 : 0, transition:'opacity 1s ease 2.2s' }}>
+        <span style={{ fontFamily:'Space Mono', fontSize:9, color:'rgba(255,255,255,0.25)', letterSpacing:'.12em' }}>
+          VISIT_{VISIT_SEED.toString(16).slice(-4).toUpperCase()}
+        </span>
+      </div>
+
+      <div style={{ position:'relative', zIndex:7 }}>
+        <div style={{ fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.22em', textTransform:'uppercase', marginBottom:22, ...tr(.2) }}>
+          ✦ PORTFOLIO · {new Date().getFullYear()} ✦
+        </div>
+
+        <h1 style={{ fontFamily:'Bebas Neue', fontSize:'clamp(88px,14vw,224px)', lineHeight:.88, letterSpacing:'.02em', ...tr(.1) }}>
+          <span className="gl" data-t={name.toUpperCase()}>{name.toUpperCase()}</span>
+        </h1>
+
+        {/* Discipline cycler */}
+        <div style={{ marginTop:30, display:'flex', alignItems:'center', gap:16, ...tr(.45) }}>
+          <div style={{ width:36, height:1, background:`linear-gradient(90deg,${cfg.acc},transparent)` }} />
+          <span style={{ fontFamily:'Space Mono', fontSize:13, color:'rgba(255,255,255,0.5)', fontStyle:'italic', minWidth:200, transition:'opacity .3s' }}>
+            {discs[discIdx]}
+          </span>
+          <div style={{ display:'flex', gap:4 }}>
+            {discs.map((_,i) => (
+              <div key={i} style={{ width:i===discIdx?18:4, height:2, background:i===discIdx?cfg.acc:'rgba(255,255,255,0.15)', borderRadius:1, transition:'all .35s' }} />
+            ))}
+          </div>
+        </div>
+
+        {/* Scroll indicator */}
+        <div style={{ marginTop:52, display:'flex', alignItems:'center', gap:12, opacity: vis ? .45 : 0, transition:'opacity 1.2s ease 1.6s' }}>
+          <div style={{ width:1, height:44, background:`linear-gradient(${cfg.acc},transparent)` }} />
+          <span style={{ fontFamily:'Space Mono', fontSize:9, color:'rgba(255,255,255,0.4)', letterSpacing:'.2em', textTransform:'uppercase' }}>scroll</span>
+        </div>
+      </div>
+
+      {/* Marquee */}
+      <div style={{ position:'absolute', bottom:0, left:0, right:0, borderTop:`1px solid rgba(255,255,255,0.06)`, overflow:'hidden', padding:'10px 0', opacity: vis ? 1 : 0, transition:'opacity 1.5s ease 1.8s', zIndex:7 }}>
+        <div style={{ display:'flex', whiteSpace:'nowrap', animation:'mq 22s linear infinite', width:'max-content' }}>
+          {[...Array(10)].map((_,i) => (
+            <span key={i} style={{ fontFamily:'Space Mono', fontSize:10, color:'rgba(255,255,255,0.14)', letterSpacing:'.2em', textTransform:'uppercase', padding:'0 28px' }}>
+              art ✦ code ✦ music ✦ anime ✦ motion ✦ games ✦ systems ✦
+            </span>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Content wrapper — solid bg below hero ───────────────────────────────── */
+function ContentBG({ children, mode }) {
+  const cfg = MODES[mode];
+  return (
+    <div style={{ position:'relative', zIndex:7 }}>
+      {/* Fade from transparent hero to solid sections */}
+      <div style={{ height:90, background:`linear-gradient(to bottom, transparent, ${cfg.bg})`, pointerEvents:'none' }} />
+      <div style={{ background: cfg.bg }}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+/* ── Work Card ───────────────────────────────────────────────────────────── */
+function WorkCard({ work, cfg }) {
+  const [hov, setHov] = useState(false);
+  return (
+    <div
+      onMouseEnter={() => setHov(true)} onMouseLeave={() => setHov(false)}
+      style={{
+        minWidth:268, width:296, flexShrink:0, borderRadius:3, overflow:'hidden', cursor:'pointer',
+        border:`1px solid ${hov ? cfg.acc+'70' : 'rgba(255,255,255,0.06)'}`,
+        background:'rgba(255,255,255,0.03)',
+        transform: hov ? 'translateY(-8px)' : 'none',
+        boxShadow: hov ? `0 28px 56px rgba(0,0,0,0.6), 0 0 0 1px ${cfg.acc}28` : '0 4px 20px rgba(0,0,0,0.3)',
+        transition:'all .32s cubic-bezier(.22,1,.36,1)',
+        scrollSnapAlign:'start',
+        backdropFilter:'blur(4px)',
+      }}
+    >
+      <div style={{ height:192, position:'relative', overflow:'hidden', background:'#111' }}>
+        {work.img
+          ? <img src={work.img} alt={work.title} style={{
+              width:'100%', height:'100%', objectFit:'cover', display:'block',
+              transform: hov ? 'scale(1.08)' : 'scale(1)',
+              transition:'transform .7s cubic-bezier(.22,1,.36,1)',
+              filter: hov ? 'brightness(1.05) saturate(1.1)' : 'brightness(0.72) saturate(0.9)',
+            }} />
+          : <div style={{ width:'100%', height:'100%', background:`repeating-linear-gradient(45deg,${cfg.acc}07,${cfg.acc}07 1px,transparent 1px,transparent 14px)`, display:'flex', alignItems:'center', justifyContent:'center' }}>
+              <span style={{ fontFamily:'Noto Sans JP', fontWeight:900, fontSize:42, color:`${cfg.acc}30` }}>{work.jp}</span>
+            </div>
+        }
+        <div style={{ position:'absolute', inset:0, background:'linear-gradient(to top, rgba(0,0,0,0.65) 0%, transparent 50%)' }} />
+        <div style={{ position:'absolute', inset:0, background:`${cfg.acc}18`, opacity:hov?1:0, transition:'opacity .35s', mixBlendMode:'screen' }} />
+        <div style={{ position:'absolute', top:10, left:10, fontFamily:'Space Mono', fontSize:8, color:'#fff', background:'rgba(0,0,0,0.5)', backdropFilter:'blur(6px)', border:`1px solid ${cfg.acc}55`, padding:'2px 8px', borderRadius:1, letterSpacing:'.12em' }}>
+          {work.tag}
+        </div>
+        <div style={{ position:'absolute', bottom:10, left:12, fontFamily:'Noto Sans JP', fontWeight:900, fontSize:13, color:`rgba(255,255,255,${hov?.75:.3})`, transition:'all .3s' }}>
+          {work.jp}
+        </div>
+        <div style={{ position:'absolute', top:8, right:10, fontFamily:'Bebas Neue', fontSize:26, color:`rgba(255,255,255,${hov?.45:.15})`, transition:'color .3s', lineHeight:1 }}>
+          {String(work.id).padStart(2,'0')}
+        </div>
+      </div>
+      <div style={{ padding:'13px 16px 17px', borderTop:`1px solid ${cfg.acc}16` }}>
+        <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:6 }}>
+          <span style={{ fontFamily:'Bebas Neue', fontSize:21, letterSpacing:'.04em', color:hov?'#f0ece4':'#999', transition:'color .2s' }}>{work.title}</span>
+          <span style={{ fontFamily:'Space Mono', fontSize:9, color:'rgba(255,255,255,0.2)' }}>{work.year}</span>
+        </div>
+        <div style={{ fontFamily:'Space Mono', fontSize:10, color:'rgba(255,255,255,0.25)', marginBottom:10 }}>{work.type}</div>
+        <div style={{ height:1, background:`linear-gradient(90deg,${cfg.acc},transparent)`, width:hov?'100%':'0%', transition:'width .45s ease' }} />
+      </div>
+    </div>
+  );
+}
+
+/* ── Works Section ───────────────────────────────────────────────────────── */
+function WorksSection({ mode }) {
+  const cfg = MODES[mode];
+  const ref = useReveal();
+  return (
+    <section id="work" style={{ paddingTop:60, paddingBottom:60 }}>
+      <div ref={ref} className="rv" style={{ padding:'0 32px 44px' }}>
+        <div style={{ fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.2em', textTransform:'uppercase', marginBottom:14 }}>
+          002 / SELECTED WORKS_
+        </div>
+        <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
+          <h2 style={{ fontFamily:'Bebas Neue', fontSize:'clamp(52px,7vw,108px)', lineHeight:.92, letterSpacing:'.02em' }}>
+            CREATED<br /><span style={{ WebkitTextStroke:`1px ${cfg.acc}`, color:'transparent' }}>& SHIPPED</span>
+          </h2>
+          <div style={{ fontFamily:'Noto Sans JP', fontWeight:900, fontSize:14, color:'rgba(255,255,255,0.12)', marginBottom:8 }}>選ばれた作品</div>
+        </div>
+      </div>
+      <div className="hscroll">
+        {WORKS.map(w => <WorkCard key={w.id} work={w} cfg={cfg} />)}
+      </div>
+    </section>
+  );
+}
+
+/* ── About Section ───────────────────────────────────────────────────────── */
+function AboutSection({ name, mode }) {
+  const cfg = MODES[mode];
+  const ref = useReveal();
+  const skills = [
+    { en:'GENERATIVE ART', jp:'生成芸術', sub:'Canvas · GLSL · Three.js · p5.js' },
+    { en:'ANIME / VIDEO',  jp:'アニメ',   sub:'AE · Blender · AI animation' },
+    { en:'MUSIC',          jp:'音楽',     sub:'Suno · Generative composition' },
+    { en:'GAMES',          jp:'ゲーム',   sub:'Unity · Godot · Experimental' },
+    { en:'WEB',            jp:'ウェブ',   sub:'React · Node · Full-stack' },
+  ];
+  return (
+    <section id="about" style={{ padding:'80px 32px', borderTop:`1px solid ${cfg.acc}18` }}>
+      <div ref={ref} className="rv">
+        <div style={{ fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.2em', textTransform:'uppercase', marginBottom:48 }}>003 / ABOUT_</div>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'60px 80px', alignItems:'start' }}>
+          <div>
+            <h2 style={{ fontFamily:'Bebas Neue', fontSize:'clamp(52px,6vw,96px)', lineHeight:.9, letterSpacing:'.02em', marginBottom:20 }}>
+              WORLDS<br />BUILT<br /><span style={{ color:cfg.acc }}>BY HAND.</span>
+            </h2>
+            <div style={{ fontFamily:'Noto Sans JP', fontWeight:900, fontSize:20, color:`${cfg.acc}44`, marginBottom:28 }}>手で作られた世界。</div>
+            <p style={{ fontFamily:'Space Mono', fontSize:11, color:'rgba(255,255,255,0.35)', lineHeight:2, marginBottom:14 }}>
+              {name} is a creator of painterly worlds — generative art, anime films, music, games, and web systems that feel like places you've been in a dream.
+            </p>
+            <p style={{ fontFamily:'Space Mono', fontSize:11, color:'rgba(255,255,255,0.35)', lineHeight:2 }}>
+              Inspired by light through leaves, water at dusk, and structures slowly swallowed by nature. Every pixel placed with intent.
+            </p>
+          </div>
+          <div>
+            {skills.map((s,i) => (
+              <div key={i} style={{ padding:'17px 0', borderBottom:`1px solid ${cfg.acc}14`, display:'grid', gridTemplateColumns:'1fr auto', alignItems:'center', gap:16 }}>
+                <div>
+                  <div style={{ fontFamily:'Bebas Neue', fontSize:17, color:'rgba(255,255,255,0.7)', letterSpacing:'.05em' }}>{s.en}</div>
+                  <div style={{ fontFamily:'Space Mono', fontSize:10, color:'rgba(255,255,255,0.25)', marginTop:2 }}>{s.sub}</div>
+                </div>
+                <div style={{ fontFamily:'Noto Sans JP', fontWeight:700, fontSize:11, color:`${cfg.acc}55`, textAlign:'right' }}>{s.jp}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Process Section ─────────────────────────────────────────────────────── */
+function ProcessSection({ mode }) {
+  const cfg = MODES[mode];
+  const ref = useReveal();
+  const steps = [
+    { n:'01', jp:'観察', en:'OBSERVE',    desc:'Find the thing that shouldn\'t exist yet.' },
+    { n:'02', jp:'実験', en:'EXPERIMENT', desc:'Break the tools. Use them wrong. Find the accident.' },
+    { n:'03', jp:'構築', en:'BUILD',      desc:'Code it. Animate it. Make it breathe.' },
+    { n:'04', jp:'解放', en:'RELEASE',    desc:'Ship it. Let it mutate in the wild.' },
+  ];
+  return (
+    <section style={{ padding:'80px 32px', borderTop:`1px solid ${cfg.acc}18` }}>
+      <div ref={ref} className="rv">
+        <div style={{ fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.2em', textTransform:'uppercase', marginBottom:48 }}>004 / PROCESS_</div>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(4,1fr)', gap:24 }}>
+          {steps.map((s,i) => (
+            <div key={i} style={{ borderTop:`2px solid ${cfg.acc}44`, paddingTop:20 }}>
+              <div style={{ display:'flex', justifyContent:'space-between', alignItems:'baseline', marginBottom:10 }}>
+                <span style={{ fontFamily:'Bebas Neue', fontSize:40, color:`${cfg.acc}44`, lineHeight:1 }}>{s.n}</span>
+                <span style={{ fontFamily:'Noto Sans JP', fontWeight:900, fontSize:11, color:`${cfg.acc}66` }}>{s.jp}</span>
+              </div>
+              <div style={{ fontFamily:'Bebas Neue', fontSize:20, color:'rgba(255,255,255,0.7)', letterSpacing:'.06em', marginBottom:10 }}>{s.en}</div>
+              <div style={{ fontFamily:'Space Mono', fontSize:10, color:'rgba(255,255,255,0.3)', lineHeight:1.75, fontStyle:'italic' }}>{s.desc}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Experiments Section ─────────────────────────────────────────────────── */
+function ExperimentsSection({ mode }) {
+  const cfg = MODES[mode];
+  const ref = useReveal();
+  const exps = [
+    { title:'Shader Garden',  tag:'GLSL',  year:'ongoing', jp:'影の庭' },
+    { title:'Type Machine',   tag:'JS',    year:'2025',    jp:'活字機' },
+    { title:'Sound Grid',     tag:'AUDIO', year:'2025',    jp:'音格子' },
+    { title:'Pixel Ritual',   tag:'ART',   year:'2024',    jp:'儀式' },
+    { title:'Form Studies',   tag:'CSS',   year:'2024',    jp:'形状' },
+    { title:'Data Portraits', tag:'GEN',   year:'2023',    jp:'肖像' },
+  ];
+  return (
+    <section style={{ padding:'80px 32px', borderTop:`1px solid ${cfg.acc}18` }}>
+      <div ref={ref} className="rv">
+        <div style={{ fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.2em', textTransform:'uppercase', marginBottom:48 }}>005 / EXPERIMENTS_</div>
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:1, background:`${cfg.acc}14` }}>
+          {exps.map((e,i) => (
+            <div key={i} style={{ background:cfg.bg, padding:'22px 18px', cursor:'pointer', position:'relative', overflow:'hidden', transition:'background .25s' }}
+              onMouseEnter={ev => ev.currentTarget.style.background = `color-mix(in srgb, ${cfg.bg} 80%, white 3%)`}
+              onMouseLeave={ev => ev.currentTarget.style.background = cfg.bg}
+            >
+              <div style={{ fontFamily:'Noto Sans JP', fontWeight:900, fontSize:30, color:`${cfg.acc}1a`, position:'absolute', bottom:-4, right:8, lineHeight:1 }}>{e.jp}</div>
+              <div style={{ fontFamily:'Space Mono', fontSize:8, color:cfg.acc, letterSpacing:'.12em', marginBottom:10, border:`1px solid ${cfg.acc}33`, display:'inline-block', padding:'1px 6px' }}>{e.tag}</div>
+              <div style={{ fontFamily:'Bebas Neue', fontSize:20, color:'rgba(255,255,255,0.65)', letterSpacing:'.04em' }}>{e.title}</div>
+              <div style={{ fontFamily:'Space Mono', fontSize:9, color:'rgba(255,255,255,0.2)', marginTop:4 }}>{e.year}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Contact Section ─────────────────────────────────────────────────────── */
+function ContactSection({ name, mode }) {
+  const cfg = MODES[mode];
+  const ref = useReveal();
+  const [hov, setHov] = useState(null);
+  const links = [
+    { label:'EMAIL',   val:`hello@${name}.com`,  href:'#' },
+    { label:'GITHUB',  val:`github.com/${name}`, href:'#' },
+    { label:'TWITTER', val:`@${name}`,           href:'#' },
+    { label:'READ.CV', val:`read.cv/${name}`,    href:'#' },
+  ];
+  return (
+    <section id="contact" style={{ padding:'80px 32px', borderTop:`1px solid ${cfg.acc}18` }}>
+      <div ref={ref} className="rv">
+        <div style={{ fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.2em', textTransform:'uppercase', marginBottom:24 }}>006 / CONTACT_</div>
+        <h2 style={{ fontFamily:'Bebas Neue', fontSize:'clamp(72px,10vw,160px)', lineHeight:.88, letterSpacing:'.02em', marginBottom:56 }}>
+          REACH<br /><span style={{ WebkitTextStroke:`1px ${cfg.acc}`, color:'transparent' }}>OUT_</span>
+        </h2>
+        <div>
+          {links.map((l,i) => (
+            <a key={i} href={l.href}
+              onMouseEnter={() => setHov(i)} onMouseLeave={() => setHov(null)}
+              style={{ display:'flex', alignItems:'center', justifyContent:'space-between', padding:'17px 0', borderBottom:`1px solid ${cfg.acc}18`, textDecoration:'none', transition:'transform .22s', transform:hov===i?'translateX(14px)':'none' }}
+            >
+              <span style={{ fontFamily:'Space Mono', fontSize:9, color:'rgba(255,255,255,0.25)', letterSpacing:'.14em', width:72 }}>{l.label}</span>
+              <span style={{ fontFamily:'Bebas Neue', fontSize:22, letterSpacing:'.05em', flex:1, paddingLeft:24, color:hov===i?cfg.acc:'rgba(255,255,255,0.65)', transition:'color .2s' }}>{l.val}</span>
+              <span style={{ color:hov===i?cfg.acc:'rgba(255,255,255,0.2)', transition:'all .2s', transform:hov===i?'translate(4px,-4px)':'none', display:'inline-block', fontSize:18 }}>↗</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ── Footer ──────────────────────────────────────────────────────────────── */
+function Footer({ name, mode }) {
+  const cfg = MODES[mode];
+  return (
+    <footer style={{ padding:'26px 32px', borderTop:`1px solid ${cfg.acc}12`, display:'flex', justifyContent:'space-between', alignItems:'center' }}>
+      <span style={{ fontFamily:'Space Mono', fontSize:9, color:'rgba(255,255,255,0.15)', letterSpacing:'.1em' }}>© {new Date().getFullYear()} {name}</span>
+      <span style={{ fontFamily:'Noto Sans JP', fontWeight:900, fontSize:11, color:'rgba(255,255,255,0.08)' }}>愛情を持って作られた</span>
+      <span style={{ fontFamily:'Space Mono', fontSize:9, color:'rgba(255,255,255,0.1)', letterSpacing:'.1em' }}>#{VISIT_SEED.toString(16).slice(-4).toUpperCase()}</span>
+    </footer>
+  );
+}
+
+/* ── Tweaks Panel ────────────────────────────────────────────────────────── */
+function TweaksPanel({ visible, tweaks, setTweaks, mode, setMode }) {
+  if (!visible) return null;
+  const cfg = MODES[mode];
+  const upd = (k,v) => {
+    setTweaks(t => ({ ...t, [k]:v }));
+    window.parent.postMessage({ type:'__edit_mode_set_keys', edits:{ [k]:v } }, '*');
+  };
+  return (
+    <div className="tp" style={{ border:`1px solid ${cfg.acc}33`, boxShadow:`0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px ${cfg.acc}18` }}>
+      <div style={{ fontFamily:'Bebas Neue', fontSize:14, color:cfg.acc, letterSpacing:'.1em' }}>TWEAKS</div>
+      <label>Name / Handle</label>
+      <input type="text" value={tweaks.name} onChange={e => upd('name', e.target.value)} />
+      <label>Tagline</label>
+      <input type="text" value={tweaks.tagline} onChange={e => upd('tagline', e.target.value)} />
+      <label>Visual Mode</label>
+      <div className="chips">
+        {Object.entries(MODES).map(([k,m]) => (
+          <button key={k} className={`chip${mode===k?' on':''}`}
+            onClick={() => { setMode(k); upd('mode',k); }}>{m.label}</button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ── App ─────────────────────────────────────────────────────────────────── */
+function App() {
+  const [tweaks, setTweaks] = useState(TWEAKS_DEFAULTS);
+  const [mode, setMode] = useState(TWEAKS_DEFAULTS.mode || 'forest');
+  const [tweaksOn, setTweaksOn] = useState(false);
+
+  useEffect(() => {
+    const handler = e => {
+      if (e.data?.type === '__activate_edit_mode')   setTweaksOn(true);
+      if (e.data?.type === '__deactivate_edit_mode') setTweaksOn(false);
+    };
+    window.addEventListener('message', handler);
+    window.parent.postMessage({ type:'__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', handler);
+  }, []);
+
+  useEffect(() => {
+    const cfg = MODES[mode];
+    document.documentElement.style.setProperty('--acc', cfg.acc);
+    document.documentElement.style.setProperty('--acc2', cfg.acc2);
+    document.documentElement.style.setProperty('--bg', cfg.bg);
+    document.body.style.background = cfg.bg;
+    document.documentElement.style.background = cfg.bg;
+  }, [mode]);
+
+  const { name, tagline } = tweaks;
+
+  return (
+    <>
+      {/* Fixed background layers */}
+      <ArtworkSlideshowBG mode={mode} />
+      <FireflyCanvas mode={mode} />
+
+      {/* Foreground content */}
+      <div style={{ position:'relative', zIndex:7 }}>
+        <Nav name={name} mode={mode} setMode={setMode} />
+        <Hero name={name} mode={mode} />
+      </div>
+
+      {/* Solid-bg content sections */}
+      <ContentBG mode={mode}>
+        <WorksSection mode={mode} />
+        <AboutSection name={name} mode={mode} />
+        <ProcessSection mode={mode} />
+        <ExperimentsSection mode={mode} />
+        <ContactSection name={name} mode={mode} />
+        <Footer name={name} mode={mode} />
+      </ContentBG>
+
+      <TweaksPanel visible={tweaksOn} tweaks={tweaks} setTweaks={setTweaks} mode={mode} setMode={setMode} />
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+</script>
+</body>
+</html>
