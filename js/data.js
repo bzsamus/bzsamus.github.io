@@ -15,16 +15,16 @@ const VISIT_SEED = (() => {
 const MODE_KEYS = ['forest', 'azure', 'lotus', 'orbit'];
 const INITIAL_MODE = MODE_KEYS[Math.floor(Math.random() * MODE_KEYS.length)];
 
-/* ── Artwork images ──────────────────────────────────────────────────────── */
+/* ── Hero background images (assets/image/hero/) ────────────────────────── */
 const ART_IMGS = [
-  'assets/image/mr5am_torii_flowers_sun_rays_sun_beams_in_the_style_of_multi-_2fb4ccc6-0778-433b-80f7-a274c8c3e6ae_2.png',
-  'assets/image/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_3eaab53c-c771-4d6c-8333-e797aa8bc109_2.png',
-  'assets/image/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_9c58bc0e-17e6-4210-86e1-5b6eaccb3a08_2.png',
-  'assets/image/mr5am_Dual_scenery_above_and_below_the_water_surface._Above_t_ed2ed109-eb7d-479b-8f01-c558e15189da_2.png',
-  'assets/image/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_347cd1e8-cbeb-4074-9730-834b0a65c0ec_3.png',
-  'assets/image/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_9c58bc0e-17e6-4210-86e1-5b6eaccb3a08_3.png',
-  'assets/image/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_ab2b930c-028a-4c8c-ac70-318cf341d5fc_1.png',
-  'assets/image/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_a40f8b1b-9f5f-44f9-a0b2-554d9e817cfd_0.png',
+  'assets/image/hero/mr5am_torii_flowers_sun_rays_sun_beams_in_the_style_of_multi-_2fb4ccc6-0778-433b-80f7-a274c8c3e6ae_2.png',
+  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_3eaab53c-c771-4d6c-8333-e797aa8bc109_2.png',
+  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_9c58bc0e-17e6-4210-86e1-5b6eaccb3a08_2.png',
+  'assets/image/hero/mr5am_Dual_scenery_above_and_below_the_water_surface._Above_t_ed2ed109-eb7d-479b-8f01-c558e15189da_2.png',
+  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_347cd1e8-cbeb-4074-9730-834b0a65c0ec_3.png',
+  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_9c58bc0e-17e6-4210-86e1-5b6eaccb3a08_3.png',
+  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_ab2b930c-028a-4c8c-ac70-318cf341d5fc_1.png',
+  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_a40f8b1b-9f5f-44f9-a0b2-554d9e817cfd_0.png',
 ];
 ART_IMGS.forEach(s => { const i = new Image(); i.src = s; });
 
