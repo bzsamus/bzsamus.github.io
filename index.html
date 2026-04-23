@@ -86,7 +86,7 @@ const VISIT_SEED = (() => {
 })();
 
 /* ── Random mode — fresh every page load ────────────────────────────────── */
-const MODE_KEYS = ['forest', 'azure', 'lotus'];
+const MODE_KEYS = ['forest', 'azure', 'lotus', 'orbit'];
 const INITIAL_MODE = MODE_KEYS[Math.floor(Math.random() * MODE_KEYS.length)];
 
 /* ── Artwork images ──────────────────────────────────────────────────────── */
@@ -97,6 +97,8 @@ const ART_IMGS = [
   'assets/image/mr5am_Dual_scenery_above_and_below_the_water_surface._Above_t_ed2ed109-eb7d-479b-8f01-c558e15189da_2.png',
   'assets/image/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_347cd1e8-cbeb-4074-9730-834b0a65c0ec_3.png',
   'assets/image/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_9c58bc0e-17e6-4210-86e1-5b6eaccb3a08_3.png',
+  'assets/image/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_ab2b930c-028a-4c8c-ac70-318cf341d5fc_1.png',
+  'assets/image/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_a40f8b1b-9f5f-44f9-a0b2-554d9e817cfd_0.png',
 ];
 ART_IMGS.forEach(s => { const i = new Image(); i.src = s; });
 
@@ -105,6 +107,7 @@ const MODES = {
   forest: { label:'FOREST', darkBg:'#0b1410', lightBg:'#f3ede0', acc:'#b87d2a', acc2:'#6db88a', rgb:[184,125,42]  },
   azure:  { label:'AZURE',  darkBg:'#080f1c', lightBg:'#e8f3fb', acc:'#3d9fc0', acc2:'#e0b840', rgb:[61,159,192]   },
   lotus:  { label:'LOTUS',  darkBg:'#060d0b', lightBg:'#e8f5f1', acc:'#2daa88', acc2:'#d0809a', rgb:[45,170,136]   },
+  orbit:  { label:'ORBIT',  darkBg:'#060912', lightBg:'#edf0fb', acc:'#58c8ea', acc2:'#a87cd4', rgb:[88,200,234]   },
 };
 
 /* ── Theme helper ────────────────────────────────────────────────────────── */
@@ -119,6 +122,8 @@ const WORKS_RAW = [
   { id:5, title:'Moving Architecture', type:'Generative Art',  year:'2024', tag:'ART',   jp:'動く城',   img:ART_IMGS[2] },
   { id:6, title:'Reclaimed',           type:'Generative Art',  year:'2023', tag:'ART',   jp:'自然回帰', img:ART_IMGS[5] },
   { id:7, title:'Pulse Engine',        type:'Generative Music',year:'2023', tag:'MUSIC', jp:'脈動',     img:null },
+  { id:8, title:'From Orbit',          type:'Generative Art',  year:'2025', tag:'ART',   jp:'軌道から', img:ART_IMGS[6] },
+  { id:9, title:'E.V.A.',              type:'Generative Art',  year:'2025', tag:'ART',   jp:'船外活動', img:ART_IMGS[7] },
 ];
 const WORKS = [...WORKS_RAW].sort((a,b) =>
   Math.sin(VISIT_SEED*a.id*9301+49297) - Math.sin(VISIT_SEED*b.id*9301+49297)
