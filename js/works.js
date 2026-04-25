@@ -247,6 +247,9 @@ function WorksSection({ mode, isDark }) {
                 <div style={{ fontFamily:'Noto Sans JP', fontWeight:900, fontSize:13, color:tx('rgba(255,255,255,0.12)','rgba(0,0,0,0.15)',isDark), marginTop:2 }}>選ばれた作品</div>
               </div>
             </div>
+            <p style={{ marginTop:14, maxWidth:640, fontFamily:'Space Mono', fontSize:11, lineHeight:1.9, color:tx('rgba(255,255,255,0.42)','rgba(0,0,0,0.58)',isDark) }}>
+              A curated selection of environments across four world states...
+            </p>
           </div>
           {CATEGORIES.map(cat => (
             <CategoryTile key={cat} category={cat} works={worksByCat[cat]} cfg={cfg} isDark={isDark} onSelect={setSelectedCat} />

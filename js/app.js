@@ -146,7 +146,12 @@ function App() {
       <ContentBG mode={mode} isDark={isDark}>
         <div className={`route-transition-shell ${routeTransitionClass}`.trim()}>
           {renderedRoute === HOME_ROUTE ? (
-            <WorldStateSelector isDark={isDark} onSelectRoute={handleWorldSelect} />
+            <>
+              <WorldStateSelector isDark={isDark} onSelectRoute={handleWorldSelect} />
+              <WorksSection mode={mode} isDark={isDark} />
+              <AboutSection name={name} mode={mode} isDark={isDark} />
+              <ContactSection name={name} mode={mode} isDark={isDark} />
+            </>
           ) : (
             <WorldStatePage worldKey={renderedRoute} isDark={isDark} onNavigate={navigateToRoute} />
           )}
