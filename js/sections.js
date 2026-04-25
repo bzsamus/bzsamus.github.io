@@ -97,8 +97,7 @@ function WorldStatePage({ worldKey, isDark, onNavigate }) {
   const worldIdx = worldOrder.indexOf(safeWorldKey);
   const prevKey = worldOrder[(worldIdx - 1 + worldOrder.length) % worldOrder.length];
   const nextKey = worldOrder[(worldIdx + 1) % worldOrder.length];
-  const galleryIdx = MODE_ART[safeWorldKey] || [];
-  const galleryAssets = galleryIdx.map((idx) => ART_IMGS[idx]).filter(Boolean);
+  const galleryAssets = WORLD_GALLERIES[safeWorldKey] || [];
   const hasVideoHero = safeWorldKey === 'beyond' && !!REEL_VIDEO;
   const bodyCopy = WORLD_DESCRIPTIONS[safeWorldKey] ?? WORLD_DESCRIPTIONS.bloom ?? '';
 
@@ -149,7 +148,7 @@ function WorldStatePage({ worldKey, isDark, onNavigate }) {
           <h3 style={{ fontFamily:'Bebas Neue', fontSize:34, letterSpacing:'.06em', margin:'0 0 14px', color:baseText }}>
             Gallery
           </h3>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:12 }}>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))', gap:12 }}>
             {galleryAssets.map((src, idx) => (
               <div key={`${src}-${idx}`} style={{ position:'relative', borderRadius:6, overflow:'hidden', border:'1px solid rgba(255,255,255,0.12)', minHeight:180 }}>
                 <img
