@@ -58,6 +58,7 @@ function App() {
       <ContentBG mode={mode} isDark={isDark}>
         <StatsBar mode={mode} isDark={isDark} />
         <WorksSection mode={mode} isDark={isDark} />
+        <VideoReelSection mode={mode} isDark={isDark} />
         <AboutSection name={name} mode={mode} isDark={isDark} />
         <ProcessSection mode={mode} isDark={isDark} />
         <ExperimentsSection mode={mode} isDark={isDark} />

@@ -1,3 +1,58 @@
+/* ── Video Reel Section ──────────────────────────────────────────────────── */
+function VideoReelSection({ mode, isDark }) {
+  if (!REEL_VIDEO) return null;
+  const cfg = MODES[mode];
+  const sectionRef = useRef();
+  const videoRef = useRef();
+  const [playing, setPlaying] = useState(false);
+
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => {
+      if (e.isIntersecting) { videoRef.current?.play(); setPlaying(true); }
+      else { videoRef.current?.pause(); setPlaying(false); }
+    }, { threshold: 0.3 });
+    if (sectionRef.current) obs.observe(sectionRef.current);
+    return () => obs.disconnect();
+  }, []);
+
+  const toggle = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (v.paused) { v.play(); setPlaying(true); } else { v.pause(); setPlaying(false); }
+  };
+
+  return (
+    <section ref={sectionRef} style={{ position:'relative', width:'100%', height:'100vh', overflow:'hidden', borderTop:`1px solid ${tx(cfg.acc+'18',cfg.acc+'28',isDark)}` }}>
+      <video
+        ref={videoRef}
+        src={REEL_VIDEO}
+        muted loop playsInline
+        style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }}
+      />
+      <div style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.45)' }} />
+      <div style={{ position:'absolute', inset:0, display:'flex', alignItems:'center', justifyContent:'center', pointerEvents:'none' }}>
+        <div style={{ fontFamily:'Bebas Neue', fontSize:'clamp(120px,20vw,280px)', lineHeight:1, color:'rgba(255,255,255,0.04)', letterSpacing:'.08em', userSelect:'none' }}>REEL</div>
+      </div>
+      <div style={{ position:'absolute', top:40, left:32, fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.2em', textTransform:'uppercase' }}>
+        007 / REEL_
+      </div>
+      <button onClick={toggle} style={{
+        position:'absolute', bottom:48, left:32,
+        width:52, height:52, borderRadius:'50%',
+        border:`1px solid ${cfg.acc}88`, background:`${cfg.acc}20`,
+        color:cfg.acc, fontSize:20, cursor:'pointer',
+        display:'flex', alignItems:'center', justifyContent:'center',
+        backdropFilter:'blur(8px)', transition:'all .2s',
+      }}
+        onMouseEnter={e => { e.currentTarget.style.background = `${cfg.acc}40`; }}
+        onMouseLeave={e => { e.currentTarget.style.background = `${cfg.acc}20`; }}
+      >
+        {playing ? '⏸' : '▶'}
+      </button>
+    </section>
+  );
+}
+
 /* ── Stats Bar ───────────────────────────────────────────────────────────── */
 function StatsBar({ mode, isDark }) {
   const cfg = MODES[mode];

@@ -1,4 +1,4 @@
-/* ── Artwork Slideshow BG ────────────────────────────────────────────────── */
+/* ── Artwork Slideshow BG ──────────────────────────────────────────────────────── */
 function ArtworkSlideshowBG({ mode, isDark }) {
   const cfg = MODES[mode];
   const modeImgs = MODE_ART[mode];
@@ -60,7 +60,7 @@ function ArtworkSlideshowBG({ mode, isDark }) {
   );
 }
 
-/* ── Weather Canvas (8 world atmospheres) ────────────────────────────────── */
+/* ── Weather Canvas (8 world atmospheres) ──────────────────────────────────── */
 function WeatherCanvas({ mode, isDark }) {
   const canvasRef = useRef();
   const rafRef = useRef();
@@ -88,14 +88,15 @@ function WeatherCanvas({ mode, isDark }) {
       const t = `${m}_${dk ? 'n' : 'd'}`;
       const rx = ox !== undefined ? ox : Math.random() * W;
       const ry = oy !== undefined ? oy : Math.random() * H;
-      if (t === 'forest_d') return { t, x:rx, y:ry<0?-20:ry, vx:(Math.random()-.5)*.8, vy:Math.random()*.6+.3, sz:Math.random()*4+2, rot:Math.random()*Math.PI*2, rv:(Math.random()-.5)*.06, ph:Math.random()*Math.PI*2 };
-      if (t === 'forest_n') return { t, x:rx, y:ry, vx:(Math.random()-.5)*.22, vy:-(Math.random()*.18+.04), r:Math.random()*2.2+.8, ph:Math.random()*Math.PI*2, fr:Math.random()*.4+.2, sz:Math.random()*14+6 };
-      if (t === 'azure_d')  return { t, x:rx<0?Math.random()*W*1.5:rx, y:ry<0?-10:ry, vx:-1.2, vy:8+Math.random()*4, len:Math.random()*12+8, al:Math.random()*.25+.08 };
-      if (t === 'azure_n')  return { t, x:rx, y:ry<0?-10:ry, vx:(Math.random()-.5)*.3, vy:.5+Math.random()*.5, sz:Math.random()*3+1.5, ph:Math.random()*Math.PI*2, fr:Math.random()*.3+.1, al:Math.random()*.5+.2 };
-      if (t === 'lotus_d')  return { t, x:rx, y:ry>H?H+20:ry, vx:(Math.random()-.5)*.6+.2, vy:-(Math.random()*.5+.2), sz:Math.random()*5+3, rot:Math.random()*Math.PI*2, rv:(Math.random()-.5)*.04, ph:Math.random()*Math.PI*2, al:Math.random()*.6+.3 };
-      if (t === 'lotus_n')  return { t, x:rx, y:ry>H?H+20:ry, vx:(Math.random()-.5)*.4, vy:-(Math.random()*.8+.4), sz:Math.random()*6+4, ph:Math.random()*Math.PI*2, fr:Math.random()*.2+.1, al:Math.random()*.55+.3 };
-      if (t === 'orbit_d')  return { t, x:rx, y:ry, vx:3+Math.random()*4, vy:-.5+Math.random(), len:Math.random()*40+20, al:Math.random()*.55+.2 };
-      if (t === 'orbit_n')  return Math.random()<.88
+
+      if (t === 'bloom_d') return { t, x:rx, y:ry<0?-20:ry, vx:(Math.random()-.5)*.8, vy:Math.random()*.6+.3, sz:Math.random()*4+2, rot:Math.random()*Math.PI*2, rv:(Math.random()-.5)*.06, ph:Math.random()*Math.PI*2 };
+      if (t === 'bloom_n') return { t, x:rx, y:ry, vx:(Math.random()-.5)*.22, vy:-(Math.random()*.18+.04), r:Math.random()*2.2+.8, ph:Math.random()*Math.PI*2, fr:Math.random()*.4+.2, sz:Math.random()*14+6 };
+      if (t === 'core_d')  return { t, x:rx, y:ry, vx:(Math.random()-.5)*.35, vy:(Math.random()-.5)*.28, sz:Math.random()*1.8+.4, isSpark:Math.random()<.1, ph:Math.random()*Math.PI*2, fr:Math.random()*.5+.2, al:Math.random()*.38+.1 };
+      if (t === 'core_n')  return { t, x:rx<0?Math.random()*W*1.2:rx, y:ry<0?-10:ry, vx:-2.5, vy:10+Math.random()*6, len:Math.random()*14+8, al:Math.random()*.32+.1 };
+      if (t === 'reclaim_d') return { t, x:rx, y:ry>H?H+20:ry, vx:(Math.random()-.5)*.5+.1, vy:-(Math.random()*.4+.15), sz:Math.random()*4+2, rot:Math.random()*Math.PI*2, rv:(Math.random()-.5)*.03, ph:Math.random()*Math.PI*2, al:Math.random()*.5+.25 };
+      if (t === 'reclaim_n') return { t, x:rx, y:ry>H?H+20:ry, vx:(Math.random()-.5)*.4, vy:-(Math.random()*.8+.4), sz:Math.random()*6+4, ph:Math.random()*Math.PI*2, fr:Math.random()*.2+.1, al:Math.random()*.55+.3 };
+      if (t === 'beyond_d') return { t, x:rx, y:ry, vx:(Math.random()-.5)*.18, vy:(Math.random()-.5)*.14, sz:Math.random()*1.1+.2, ph:Math.random()*Math.PI*2, fr:Math.random()*.6+.2, al:Math.random()*.45+.15 };
+      if (t === 'beyond_n') return Math.random()<.88
         ? { t, isStar:true,  x:rx, y:ry, sz:Math.random()*1.4+.3, ph:Math.random()*Math.PI*2, fr:Math.random()*.5+.1 }
         : { t, isStar:false, x:rx, y:ry<0?Math.random()*H*.4:ry, vx:-2-Math.random()*3, vy:.5+Math.random(), len:Math.random()*60+30, al:Math.random()*.6+.3 };
       return null;
@@ -144,7 +145,7 @@ function WeatherCanvas({ mode, isDark }) {
         const p = ps[i];
         if (p.t !== wt) { ps.splice(i, 1); continue; }
 
-        if (wt === 'forest_d') {
+        if (wt === 'bloom_d') {
           p.x += p.vx + Math.sin(ti + p.ph) * .3; p.y += p.vy; p.rot += p.rv;
           if (p.burst) { p.vx *= .94; p.vy *= .94; }
           ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
@@ -154,7 +155,7 @@ function WeatherCanvas({ mode, isDark }) {
           ctx.restore();
           if (p.y > H + 30) ps.splice(i, 1);
 
-        } else if (wt === 'forest_n') {
+        } else if (wt === 'bloom_n') {
           p.x += p.vx + Math.sin(ti*.3+p.ph)*.08; p.y += p.vy + Math.cos(ti*.25+p.ph*1.3)*.06;
           p.vx += (Math.random()-.5)*.008; p.vy += (Math.random()-.5)*.006;
           p.vx *= .996; p.vy *= .996;
@@ -167,65 +168,70 @@ function WeatherCanvas({ mode, isDark }) {
           g1.addColorStop(1,`rgba(${pr},${pg},${pb},0)`);
           ctx.beginPath(); ctx.fillStyle=g1; ctx.arc(p.x,p.y,p.sz*2,0,Math.PI*2); ctx.fill();
           const g2 = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.r*1.8);
-          g2.addColorStop(0,`rgba(255,255,240,${al*.9})`);
+          g2.addColorStop(0,`rgba(255,248,220,${al*.9})`);
           g2.addColorStop(1,`rgba(${pr},${pg},${pb},0)`);
           ctx.beginPath(); ctx.fillStyle=g2; ctx.arc(p.x,p.y,p.r*1.8,0,Math.PI*2); ctx.fill();
 
-        } else if (wt === 'azure_d') {
+        } else if (wt === 'core_d') {
+          p.vx += (Math.random()-.5)*.015; p.vy += (Math.random()-.5)*.015;
+          p.vx *= .99; p.vy *= .99;
+          p.x += p.vx; p.y += p.vy;
+          if (p.x<-20)p.x=W+20; if(p.x>W+20)p.x=-20;
+          if (p.y<-20)p.y=H+20; if(p.y>H+20)p.y=-20;
+          if (p.isSpark) {
+            const sa = (Math.sin(ti*p.fr*4+p.ph)*.5+.5)*p.al*1.4;
+            ctx.beginPath(); ctx.fillStyle=`rgba(0,220,255,${sa})`; ctx.arc(p.x,p.y,p.sz*1.2,0,Math.PI*2); ctx.fill();
+            ctx.beginPath(); ctx.fillStyle=`rgba(180,240,255,${sa*.7})`; ctx.arc(p.x,p.y,p.sz*.4,0,Math.PI*2); ctx.fill();
+          } else {
+            const da = (Math.sin(ti*p.fr+p.ph)*.3+.7)*p.al;
+            ctx.beginPath(); ctx.fillStyle=`rgba(180,200,220,${da})`; ctx.arc(p.x,p.y,p.sz,0,Math.PI*2); ctx.fill();
+          }
+
+        } else if (wt === 'core_n') {
           p.x += p.vx; p.y += p.vy;
           ctx.save(); ctx.globalAlpha = p.al;
-          ctx.strokeStyle = 'rgba(168,216,234,1)'; ctx.lineWidth = .7;
+          ctx.strokeStyle = 'rgba(0,220,255,1)'; ctx.lineWidth = .8;
           ctx.beginPath(); ctx.moveTo(p.x, p.y); ctx.lineTo(p.x - p.vx * (p.len / p.vy), p.y - p.len); ctx.stroke();
           ctx.restore();
           if (p.y > H + 30) ps.splice(i, 1);
 
-        } else if (wt === 'azure_n') {
-          p.x += p.vx + Math.sin(ti+p.ph)*.15; p.y += p.vy;
-          const aa = (Math.sin(ti*p.fr+p.ph)*.4+.6)*p.al;
-          const ag = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.sz*4);
-          ag.addColorStop(0,`rgba(61,159,192,${aa*.8})`); ag.addColorStop(1,`rgba(61,159,192,0)`);
-          ctx.beginPath(); ctx.fillStyle=ag; ctx.arc(p.x,p.y,p.sz*4,0,Math.PI*2); ctx.fill();
-          ctx.beginPath(); ctx.fillStyle=`rgba(140,230,255,${aa})`; ctx.arc(p.x,p.y,p.sz*.5,0,Math.PI*2); ctx.fill();
-          if (p.y > H + 30) ps.splice(i, 1);
-
-        } else if (wt === 'lotus_d') {
+        } else if (wt === 'reclaim_d') {
           p.x += p.vx + Math.sin(ti+p.ph)*.3; p.y += p.vy; p.rot += p.rv;
           if (p.burst) { p.vx *= .94; p.vy *= .94; }
           ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.rot);
           ctx.globalAlpha = p.al;
-          ctx.fillStyle = 'rgba(208,128,154,1)';
-          ctx.beginPath(); ctx.ellipse(0, 0, p.sz, p.sz * .6, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = 'rgba(200,240,210,1)';
+          ctx.beginPath(); ctx.ellipse(0, 0, p.sz, p.sz * .65, 0, 0, Math.PI * 2); ctx.fill();
           ctx.restore();
           if (p.y < -30) ps.splice(i, 1);
 
-        } else if (wt === 'lotus_n') {
+        } else if (wt === 'reclaim_n') {
           p.x += p.vx + Math.sin(ti*.4+p.ph)*.2; p.y += p.vy;
           const la = (Math.sin(ti*p.fr+p.ph)*.3+.7)*p.al;
           const lg = ctx.createRadialGradient(p.x,p.y,0,p.x,p.y,p.sz*3);
-          lg.addColorStop(0,`rgba(232,168,74,${la})`); lg.addColorStop(.4,`rgba(232,168,74,${la*.4})`); lg.addColorStop(1,`rgba(232,168,74,0)`);
+          lg.addColorStop(0,`rgba(${pr},${pg},${pb},${la})`); lg.addColorStop(.4,`rgba(${pr},${pg},${pb},${la*.4})`); lg.addColorStop(1,`rgba(${pr},${pg},${pb},0)`);
           ctx.beginPath(); ctx.fillStyle=lg; ctx.arc(p.x,p.y,p.sz*3,0,Math.PI*2); ctx.fill();
-          ctx.save(); ctx.globalAlpha=la*.8; ctx.fillStyle='rgb(232,168,74)';
-          ctx.beginPath(); ctx.ellipse(p.x,p.y,p.sz*.6,p.sz,0,0,Math.PI*2); ctx.fill(); ctx.restore();
+          ctx.save(); ctx.globalAlpha=la*.8; ctx.fillStyle=`rgb(${pr},${pg},${pb})`;
+          ctx.beginPath(); ctx.arc(p.x,p.y,p.sz*.5,0,Math.PI*2); ctx.fill(); ctx.restore();
           if (p.y < -40) ps.splice(i, 1);
 
-        } else if (wt === 'orbit_d') {
+        } else if (wt === 'beyond_d') {
+          p.vx += (Math.random()-.5)*.008; p.vy += (Math.random()-.5)*.008;
+          p.vx *= .995; p.vy *= .995;
           p.x += p.vx; p.y += p.vy;
-          const og = ctx.createLinearGradient(p.x,p.y,p.x-p.len,p.y-(p.vy/Math.max(p.vx,.1))*p.len);
-          og.addColorStop(0,'rgba(255,220,100,.8)'); og.addColorStop(1,'rgba(255,220,100,0)');
-          ctx.save(); ctx.globalAlpha=p.al*(1-p.x/W*.5);
-          ctx.strokeStyle=og; ctx.lineWidth=1.5;
-          ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p.x-p.len,p.y-(p.vy/Math.max(p.vx,.1))*p.len); ctx.stroke();
-          ctx.restore();
-          if (p.x > W + 60) ps.splice(i, 1);
+          if (p.x<-10)p.x=W+10; if(p.x>W+10)p.x=-10;
+          if (p.y<-10)p.y=H+10; if(p.y>H+10)p.y=-10;
+          const ba = (Math.sin(ti*p.fr+p.ph)*.5+.5)*p.al;
+          ctx.beginPath(); ctx.fillStyle=`rgba(220,210,255,${ba})`; ctx.arc(p.x,p.y,p.sz,0,Math.PI*2); ctx.fill();
 
-        } else if (wt === 'orbit_n') {
+        } else if (wt === 'beyond_n') {
           if (p.isStar) {
             const sa = (Math.sin(ti*p.fr+p.ph)*.4+.6)*.7;
             ctx.beginPath(); ctx.fillStyle=`rgba(255,255,255,${sa})`; ctx.arc(p.x,p.y,p.sz,0,Math.PI*2); ctx.fill();
           } else {
             p.x += p.vx; p.y += p.vy;
             const sg = ctx.createLinearGradient(p.x,p.y,p.x-p.len,p.y-p.vy*(p.len/Math.abs(p.vx)));
-            sg.addColorStop(0,`rgba(200,150,255,${p.al})`); sg.addColorStop(1,'rgba(200,150,255,0)');
+            sg.addColorStop(0,`rgba(180,130,255,${p.al})`); sg.addColorStop(1,'rgba(180,130,255,0)');
             ctx.strokeStyle=sg; ctx.lineWidth=1.5;
             ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(p.x-p.len,p.y-p.vy*(p.len/Math.abs(p.vx))); ctx.stroke();
             if (p.x < -60) ps.splice(i, 1);
@@ -247,7 +253,7 @@ function WeatherCanvas({ mode, isDark }) {
   return <canvas ref={canvasRef} style={{ position:'fixed', inset:0, zIndex:6, pointerEvents:'none' }} />;
 }
 
-/* ── Portal Canvas ───────────────────────────────────────────────────────── */
+/* ── Portal Canvas ───────────────────────────────────────────────────────────────── */
 function PortalCanvas({ targetMode, onMidpoint, onComplete }) {
   const ref = useRef();
   useEffect(() => {
@@ -303,7 +309,7 @@ function PortalCanvas({ targetMode, onMidpoint, onComplete }) {
   return <canvas ref={ref} style={{ position:'fixed', inset:0, zIndex:9000, pointerEvents:'all' }} />;
 }
 
-/* ── Grain Overlay ───────────────────────────────────────────────────────── */
+/* ── Grain Overlay ──────────────────────────────────────────────────────────────────── */
 function GrainOverlay({ isDark }) {
   return (
     <div className="grain-ov" style={{ opacity: isDark ? 0.045 : 0.028 }}>
@@ -312,7 +318,7 @@ function GrainOverlay({ isDark }) {
   );
 }
 
-/* ── Custom Cursor ───────────────────────────────────────────────────────── */
+/* ── Custom Cursor ───────────────────────────────────────────────────────────────────── */
 function CustomCursor({ mode }) {
   const ringRef = useRef();
   const dotRef = useRef();
