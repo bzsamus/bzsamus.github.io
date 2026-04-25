@@ -329,7 +329,7 @@ function AboutSection({ name, mode, isDark }) {
             </h2>
             <div style={{ fontFamily:'Noto Sans JP', fontWeight:900, fontSize:20, color:`${cfg.acc}44`, marginBottom:28 }}>手で作られた世界。</div>
             <p style={{ fontFamily:'Space Mono', fontSize:11, color:body, lineHeight:2, marginBottom:14 }}>
-              {name} is a creator of painterly worlds — generative art, anime films, music, games, and web systems that feel like places you've been in a dream.
+              I create cinematic environments that explore how worlds evolve over time...
             </p>
             <p style={{ fontFamily:'Space Mono', fontSize:11, color:body, lineHeight:2 }}>
               Inspired by light through leaves, water at dusk, and structures slowly swallowed by nature. Every pixel placed with intent.
@@ -437,6 +437,9 @@ function ContactSection({ name, mode, isDark }) {
         <h2 style={{ fontFamily:'Bebas Neue', fontSize:'clamp(72px,10vw,160px)', lineHeight:.88, letterSpacing:'.02em', marginBottom:56, color:heading }}>
           REACH<br /><span style={{ WebkitTextStroke:`1px ${cfg.acc}`, color:'transparent' }}>OUT_</span>
         </h2>
+        <p style={{ margin:'-30px 0 30px', maxWidth:680, fontFamily:'Space Mono', fontSize:11, lineHeight:1.9, color:tx('rgba(255,255,255,0.42)','rgba(0,0,0,0.58)',isDark) }}>
+          Open to collaborations involving visual storytelling and worldbuilding.
+        </p>
         <div>
           {links.map((l,i) => (
             <a key={i} href={l.href}

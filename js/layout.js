@@ -164,12 +164,7 @@ function Hero({ name, mode, isDark }) {
   const scrollColor = 'rgba(255,255,255,0.4)';
   const mq = isDark ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.22)';
 
-  const lines = [
-    { text:'BUILDING', outline:true  },
-    { text:'WORLDS',   outline:false },
-    { text:'FROM',     outline:true  },
-    { text:'NOTHING',  outline:false },
-  ];
+  const heroHeading = 'Cinematic Worldbuilding Through Visual States';
 
   return (
     <section style={{ minHeight:'100vh', display:'flex', flexDirection:'column', justifyContent:'flex-end', padding:'0 32px 72px', position:'relative', overflow:'hidden' }}>
@@ -189,15 +184,16 @@ function Hero({ name, mode, isDark }) {
         <div style={{ fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.22em', textTransform:'uppercase', marginBottom:16, ...tr(.2) }}>
           ✦ PORTFOLIO · {new Date().getFullYear()} ✦
         </div>
-        <h1 style={{ ...tr(.1), lineHeight:1 }}>
-          {lines.map((ln, i) => (
-            <span key={i} style={{
-              display:'block', fontFamily:'Bebas Neue',
-              fontSize:'clamp(68px,11.5vw,190px)', lineHeight:.87, letterSpacing:'.02em',
-              color: ln.outline ? 'transparent' : (isDark ? '#f0ece4' : '#fff'),
-              WebkitTextStroke: ln.outline ? '1.5px rgba(255,255,255,0.72)' : 'none',
-            }}>{ln.text}</span>
-          ))}
+        <h1 style={{
+          ...tr(.1),
+          fontFamily:'Bebas Neue',
+          fontSize:'clamp(56px,9vw,140px)',
+          lineHeight:.9,
+          letterSpacing:'.02em',
+          color: isDark ? '#f0ece4' : '#fff',
+          maxWidth:1000,
+        }}>
+          {heroHeading}
         </h1>
         <div style={{ marginTop:28, display:'flex', alignItems:'center', gap:16, ...tr(.45) }}>
           <div style={{ width:36, height:1, background:`linear-gradient(90deg,${cfg.acc},transparent)` }} />
