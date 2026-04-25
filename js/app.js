@@ -2,6 +2,7 @@
 function App() {
   const [loading, setLoading] = useState(true);
   const [tweaks, setTweaks] = useState(TWEAKS_DEFAULTS);
+  const [currentRoute, setCurrentRoute] = useState(HOME_ROUTE);
   const [mode, setMode] = useState(INITIAL_MODE);
   const [isDark, setIsDark] = useState(true);
   const [tweaksOn, setTweaksOn] = useState(false);
@@ -34,6 +35,16 @@ function App() {
   }, [mode, isDark]);
 
   const { name } = tweaks;
+  const handleWorldSelect = (routeKey) => {
+    if (!MODE_KEYS.includes(routeKey)) return;
+    setCurrentRoute(routeKey);
+    triggerPortal(routeKey);
+  };
+  const handlePortalRoute = (routeKey) => {
+    if (!MODE_KEYS.includes(routeKey)) return;
+    setCurrentRoute(routeKey);
+    triggerPortal(routeKey);
+  };
 
   return (
     <>
@@ -42,7 +53,6 @@ function App() {
       <ArtworkSlideshowBG mode={mode} isDark={isDark} />
       <WeatherCanvas mode={mode} isDark={isDark} />
       <GrainOverlay isDark={isDark} />
-      <CustomCursor mode={mode} />
 
       <PortalCanvas
         targetMode={portalTarget}
@@ -51,19 +61,25 @@ function App() {
       />
 
       <div style={{ position:'relative', zIndex:7 }}>
-        <Nav name={name} mode={mode} onPortal={triggerPortal} isDark={isDark} setIsDark={setIsDark} />
+        <Nav name={name} mode={mode} onPortal={handlePortalRoute} isDark={isDark} setIsDark={setIsDark} />
         <Hero name={name} mode={mode} isDark={isDark} />
       </div>
 
       <ContentBG mode={mode} isDark={isDark}>
-        <StatsBar mode={mode} isDark={isDark} />
-        <WorksSection mode={mode} isDark={isDark} />
-        <VideoReelSection mode={mode} isDark={isDark} />
-        <AboutSection name={name} mode={mode} isDark={isDark} />
-        <ProcessSection mode={mode} isDark={isDark} />
-        <ExperimentsSection mode={mode} isDark={isDark} />
-        <ContactSection name={name} mode={mode} isDark={isDark} />
-        <Footer name={name} mode={mode} isDark={isDark} />
+        {currentRoute === HOME_ROUTE ? (
+          <WorldStateSelector isDark={isDark} onSelectRoute={handleWorldSelect} />
+        ) : (
+          <>
+            <StatsBar mode={mode} isDark={isDark} />
+            <WorksSection mode={mode} isDark={isDark} />
+            <VideoReelSection mode={mode} isDark={isDark} />
+            <AboutSection name={name} mode={mode} isDark={isDark} />
+            <ProcessSection mode={mode} isDark={isDark} />
+            <ExperimentsSection mode={mode} isDark={isDark} />
+            <ContactSection name={name} mode={mode} isDark={isDark} />
+            <Footer name={name} mode={mode} isDark={isDark} />
+          </>
+        )}
       </ContentBG>
 
       <TweaksPanel visible={tweaksOn} tweaks={tweaks} setTweaks={setTweaks}
