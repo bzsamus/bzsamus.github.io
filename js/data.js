@@ -31,6 +31,14 @@ const ART_IMGS = [
 ];
 ART_IMGS.forEach(s => { const i = new Image(); i.src = s; });
 
+/* ── Slideshow index sets (ArtworkSlideshowBG dependency) ──────────────── */
+const MODE_ART = {
+  bloom: [0, 4, 5, 7],
+  core: [1, 2, 3, 6],
+  reclaim: [2, 5, 4, 3],
+  beyond: [7, 6, 3, 1],
+};
+
 /* ── Homepage world route metadata (single source of truth for labels) ─── */
 const WORLD_ROUTE_META = {
   bloom:   { key:'bloom',   label:'Bloom',   heroImg:ART_IMGS[0], description:'Lush growth and warm sunlight.' },

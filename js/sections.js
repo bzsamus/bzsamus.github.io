@@ -25,7 +25,7 @@ function WorldStateSelector({ isDark, onSelectRoute }) {
               <button
                 key={card.key}
                 type="button"
-                className="world-state-card"
+                className="world-state-card zoom-surface"
                 onClick={() => activate(card.key)}
                 onMouseEnter={() => setHoveredKey(card.key)}
                 onMouseLeave={() => setHoveredKey(null)}
@@ -56,12 +56,11 @@ function WorldStateSelector({ isDark, onSelectRoute }) {
                   src={card.heroImg}
                   alt=""
                   aria-hidden="true"
+                  className="zoom-media"
                   style={{
                     position:'absolute',
                     inset:0,
-                    width:'100%',
-                    height:'100%',
-                    objectFit:'cover',
+                    ['--zoom-hover']:'1.06',
                     filter:active ? 'contrast(1.14) brightness(.9) saturate(1.05)' : 'contrast(1.03) brightness(.72) saturate(.8)',
                     transition:'filter .24s ease',
                   }}
@@ -86,6 +85,32 @@ function WorldStateSelector({ isDark, onSelectRoute }) {
   );
 }
 
+function WorldGalleryCard({ src, idx, label }) {
+  const cardRef = useReveal('-40px');
+
+  return (
+    <div
+      ref={cardRef}
+      className="rv zoom-surface"
+      style={{
+        position:'relative',
+        borderRadius:6,
+        overflow:'hidden',
+        border:'1px solid rgba(255,255,255,0.12)',
+        minHeight:180,
+        transitionDelay:`${Math.min(idx * 70, 420)}ms`,
+      }}
+    >
+      <img
+        src={src}
+        alt={`${label} gallery ${idx + 1}`}
+        className="zoom-media"
+        style={{ ['--zoom-hover']:'1.045' }}
+      />
+    </div>
+  );
+}
+
 /* ── World State Page ───────────────────────────────────────────────────── */
 function WorldStatePage({ worldKey, isDark, onNavigate }) {
   const safeWorldKey = MODE_KEYS.includes(worldKey) ? worldKey : 'bloom';
@@ -100,14 +125,44 @@ function WorldStatePage({ worldKey, isDark, onNavigate }) {
   const galleryAssets = WORLD_GALLERIES[safeWorldKey] || [];
   const hasVideoHero = safeWorldKey === 'beyond' && !!REEL_VIDEO;
   const bodyCopy = WORLD_DESCRIPTIONS[safeWorldKey] ?? WORLD_DESCRIPTIONS.bloom ?? '';
+  const heroRef = useRef();
 
   const baseText = tx('rgba(255,255,255,0.78)', 'rgba(0,0,0,0.78)', isDark);
   const bodyText = tx('rgba(255,255,255,0.58)', 'rgba(0,0,0,0.58)', isDark);
 
+  useEffect(() => {
+    const heroEl = heroRef.current;
+    if (!heroEl) return;
+
+    let rafId = null;
+    const updateParallax = () => {
+      rafId = null;
+      const rect = heroEl.getBoundingClientRect();
+      const viewH = window.innerHeight || 1;
+      const progress = Math.max(0, Math.min(1, (viewH - rect.top) / (viewH + rect.height)));
+      const offset = (progress - 0.5) * 36;
+      heroEl.style.setProperty('--hero-parallax', `${offset.toFixed(2)}px`);
+    };
+
+    const onScrollOrResize = () => {
+      if (rafId !== null) return;
+      rafId = window.requestAnimationFrame(updateParallax);
+    };
+
+    updateParallax();
+    window.addEventListener('scroll', onScrollOrResize, { passive:true });
+    window.addEventListener('resize', onScrollOrResize);
+    return () => {
+      if (rafId !== null) window.cancelAnimationFrame(rafId);
+      window.removeEventListener('scroll', onScrollOrResize);
+      window.removeEventListener('resize', onScrollOrResize);
+    };
+  }, [safeWorldKey]);
+
   return (
     <section style={{ borderTop:'1px solid rgba(255,255,255,0.08)' }}>
       <div style={{ maxWidth:1200, margin:'0 auto', padding:'36px 32px 80px' }}>
-        <div style={{ position:'relative', minHeight:'clamp(300px,52vw,580px)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:8, overflow:'hidden' }}>
+        <div ref={heroRef} className="world-hero" style={{ position:'relative', minHeight:'clamp(300px,52vw,580px)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:8, overflow:'hidden' }}>
           {hasVideoHero ? (
             <video
               src={REEL_VIDEO}
@@ -115,12 +170,14 @@ function WorldStatePage({ worldKey, isDark, onNavigate }) {
               muted
               loop
               playsInline
+              className="world-hero-bg"
               style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }}
             />
           ) : (
             <img
               src={meta.heroImg}
               alt={`${meta.label} world`}
+              className="world-hero-bg"
               style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }}
             />
           )}
@@ -150,13 +207,7 @@ function WorldStatePage({ worldKey, isDark, onNavigate }) {
           </h3>
           <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))', gap:12 }}>
             {galleryAssets.map((src, idx) => (
-              <div key={`${src}-${idx}`} style={{ position:'relative', borderRadius:6, overflow:'hidden', border:'1px solid rgba(255,255,255,0.12)', minHeight:180 }}>
-                <img
-                  src={src}
-                  alt={`${meta.label} gallery ${idx + 1}`}
-                  style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}
-                />
-              </div>
+              <WorldGalleryCard key={`${src}-${idx}`} src={src} idx={idx} label={meta.label} />
             ))}
           </div>
         </div>
