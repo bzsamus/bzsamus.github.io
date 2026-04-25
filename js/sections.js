@@ -88,18 +88,19 @@ function WorldStateSelector({ isDark, onSelectRoute }) {
 
 /* ── World State Page ───────────────────────────────────────────────────── */
 function WorldStatePage({ worldKey, isDark, onNavigate }) {
-  const meta = WORLD_ROUTE_META[worldKey];
-  const cfg = MODES[worldKey];
+  const safeWorldKey = MODE_KEYS.includes(worldKey) ? worldKey : 'bloom';
+  const meta = WORLD_ROUTE_META[safeWorldKey] || WORLD_ROUTE_META.bloom;
+  const cfg = MODES[safeWorldKey] || MODES.bloom;
   if (!meta || !cfg) return null;
 
   const worldOrder = MODE_KEYS;
-  const worldIdx = worldOrder.indexOf(worldKey);
+  const worldIdx = worldOrder.indexOf(safeWorldKey);
   const prevKey = worldOrder[(worldIdx - 1 + worldOrder.length) % worldOrder.length];
   const nextKey = worldOrder[(worldIdx + 1) % worldOrder.length];
-  const galleryIdx = MODE_ART[worldKey] || [];
+  const galleryIdx = MODE_ART[safeWorldKey] || [];
   const galleryAssets = galleryIdx.map((idx) => ART_IMGS[idx]).filter(Boolean);
-  const hasVideoHero = worldKey === 'beyond' && !!REEL_VIDEO;
-  const bodyCopy = meta.description;
+  const hasVideoHero = safeWorldKey === 'beyond' && !!REEL_VIDEO;
+  const bodyCopy = WORLD_DESCRIPTIONS[safeWorldKey] ?? WORLD_DESCRIPTIONS.bloom ?? '';
 
   const baseText = tx('rgba(255,255,255,0.78)', 'rgba(0,0,0,0.78)', isDark);
   const bodyText = tx('rgba(255,255,255,0.58)', 'rgba(0,0,0,0.58)', isDark);

@@ -38,6 +38,14 @@ const WORLD_ROUTE_META = {
   beyond:  { key:'beyond',  label:'Beyond',  heroImg:ART_IMGS[7], description:'Deep space, silence, and cosmic scale.' },
 };
 
+/* ── World page descriptions (single source of truth for body copy) ────── */
+const WORLD_DESCRIPTIONS = {
+  bloom: 'Lush growth and warm sunlight.',
+  core: 'Mechanical density and electric structure.',
+  reclaim: 'Nature returning through the ruins.',
+  beyond: 'Deep space, silence, and cosmic scale.',
+};
+
 /* ── World config ────────────────────────────────────────────────────────── */
 const MODES = {
   bloom:   { label:'BLOOM',   darkBg:'#0c1209', lightBg:'#f5ede0', acc:'#f0a855', acc2:'#7ac47a', rgb:[240,168,85],  jp:'花ひらく世界へ', jpWords:['花咲く','自然','光明']   },
