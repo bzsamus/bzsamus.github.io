@@ -63,6 +63,8 @@ const WORKS = [...WORKS_RAW].sort((a,b) =>
   Math.sin(VISIT_SEED*a.id*9301+49297) - Math.sin(VISIT_SEED*b.id*9301+49297)
 );
 
+Const REEL_VIDEO = 'assets/video/reel.mp4';
+
 /* ── Tweaks defaults (used by edit-mode integration) ────────────────────── */
 const TWEAKS_DEFAULTS = /*EDITMODE-BEGIN*/{
   "name": "mr5am",
