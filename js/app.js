@@ -130,7 +130,6 @@ function App() {
       <ArtworkSlideshowBG mode={mode} isDark={isDark} />
       <WeatherCanvas mode={mode} isDark={isDark} />
       <GrainOverlay isDark={isDark} />
-      <CustomCursor mode={mode} />
 
       <PortalCanvas
         targetMode={portalTarget}
