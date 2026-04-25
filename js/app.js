@@ -11,6 +11,8 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [tweaks, setTweaks] = useState(TWEAKS_DEFAULTS);
   const [currentRoute, setCurrentRoute] = useState(() => parseRouteFromPath(window.location.pathname));
+  const [renderedRoute, setRenderedRoute] = useState(() => parseRouteFromPath(window.location.pathname));
+  const [routeTransitionClass, setRouteTransitionClass] = useState('');
   const [mode, setMode] = useState(INITIAL_MODE);
   const [isDark, setIsDark] = useState(true);
   const [tweaksOn, setTweaksOn] = useState(false);
@@ -78,6 +80,39 @@ function App() {
     document.documentElement.style.color = isDark ? '#f0ece4' : '#1a1a1a';
   }, [mode, isDark]);
 
+  useEffect(() => {
+    if (currentRoute === renderedRoute) return;
+
+    const fromIsHome = renderedRoute === HOME_ROUTE;
+    const fromIsWorld = MODE_KEYS.includes(renderedRoute);
+    const toIsWorld = MODE_KEYS.includes(currentRoute);
+    const shouldAnimateRoute = toIsWorld && (fromIsHome || fromIsWorld);
+
+    if (!shouldAnimateRoute) {
+      setRenderedRoute(currentRoute);
+      setRouteTransitionClass('');
+      return;
+    }
+
+    const transitionMs = 500;
+    const halfMs = transitionMs / 2;
+    setRouteTransitionClass('route-exit');
+
+    const swapTimer = window.setTimeout(() => {
+      setRenderedRoute(currentRoute);
+      setRouteTransitionClass('route-enter');
+    }, halfMs);
+
+    const endTimer = window.setTimeout(() => {
+      setRouteTransitionClass('');
+    }, transitionMs);
+
+    return () => {
+      window.clearTimeout(swapTimer);
+      window.clearTimeout(endTimer);
+    };
+  }, [currentRoute, renderedRoute]);
+
   const { name } = tweaks;
   const handleWorldSelect = (routeKey) => {
     if (!MODE_KEYS.includes(routeKey)) return;
@@ -109,11 +144,13 @@ function App() {
       </div>
 
       <ContentBG mode={mode} isDark={isDark}>
-        {currentRoute === HOME_ROUTE ? (
-          <WorldStateSelector isDark={isDark} onSelectRoute={handleWorldSelect} />
-        ) : (
-          <WorldStatePage worldKey={currentRoute} isDark={isDark} onNavigate={navigateToRoute} />
-        )}
+        <div className={`route-transition-shell ${routeTransitionClass}`.trim()}>
+          {renderedRoute === HOME_ROUTE ? (
+            <WorldStateSelector isDark={isDark} onSelectRoute={handleWorldSelect} />
+          ) : (
+            <WorldStatePage worldKey={renderedRoute} isDark={isDark} onNavigate={navigateToRoute} />
+          )}
+        </div>
       </ContentBG>
 
       <TweaksPanel visible={tweaksOn} tweaks={tweaks} setTweaks={setTweaks}
