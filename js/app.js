@@ -1,8 +1,16 @@
 /* ── App ─────────────────────────────────────────────────────────────────── */
 function App() {
+  const parseRouteFromPath = (pathname) => {
+    const trimmed = (pathname || '/').replace(/\/+$/, '') || '/';
+    if (trimmed === '/') return HOME_ROUTE;
+    const key = trimmed.slice(1);
+    return MODE_KEYS.includes(key) ? key : HOME_ROUTE;
+  };
+  const toPath = (routeKey) => routeKey === HOME_ROUTE ? '/' : `/${routeKey}`;
+
   const [loading, setLoading] = useState(true);
   const [tweaks, setTweaks] = useState(TWEAKS_DEFAULTS);
-  const [currentRoute, setCurrentRoute] = useState(HOME_ROUTE);
+  const [currentRoute, setCurrentRoute] = useState(() => parseRouteFromPath(window.location.pathname));
   const [mode, setMode] = useState(INITIAL_MODE);
   const [isDark, setIsDark] = useState(true);
   const [tweaksOn, setTweaksOn] = useState(false);
@@ -11,6 +19,42 @@ function App() {
   const triggerPortal = (newMode) => {
     if (portalTarget || newMode === mode) return;
     setPortalTarget(newMode);
+  };
+
+  useEffect(() => {
+    const derivedRoute = parseRouteFromPath(window.location.pathname);
+    if (derivedRoute === HOME_ROUTE && window.location.pathname !== '/') {
+      window.history.replaceState({ route: HOME_ROUTE }, '', '/');
+    } else {
+      window.history.replaceState({ route: derivedRoute }, '', toPath(derivedRoute));
+    }
+    if (derivedRoute !== HOME_ROUTE) {
+      setMode(derivedRoute);
+    }
+  }, []);
+
+  useEffect(() => {
+    const onPopState = () => {
+      const routeFromPath = parseRouteFromPath(window.location.pathname);
+      setCurrentRoute(routeFromPath);
+      if (routeFromPath !== HOME_ROUTE && routeFromPath !== mode) {
+        triggerPortal(routeFromPath);
+      }
+    };
+    window.addEventListener('popstate', onPopState);
+    return () => window.removeEventListener('popstate', onPopState);
+  }, [mode]);
+
+  const navigateToRoute = (routeKey) => {
+    if (!ROUTE_KEYS.includes(routeKey)) return;
+    const nextPath = toPath(routeKey);
+    if (window.location.pathname !== nextPath) {
+      window.history.pushState({ route: routeKey }, '', nextPath);
+    }
+    setCurrentRoute(routeKey);
+    if (routeKey !== HOME_ROUTE) {
+      triggerPortal(routeKey);
+    }
   };
 
   useEffect(() => {
@@ -37,13 +81,11 @@ function App() {
   const { name } = tweaks;
   const handleWorldSelect = (routeKey) => {
     if (!MODE_KEYS.includes(routeKey)) return;
-    setCurrentRoute(routeKey);
-    triggerPortal(routeKey);
+    navigateToRoute(routeKey);
   };
   const handlePortalRoute = (routeKey) => {
     if (!MODE_KEYS.includes(routeKey)) return;
-    setCurrentRoute(routeKey);
-    triggerPortal(routeKey);
+    navigateToRoute(routeKey);
   };
 
   return (
@@ -70,16 +112,7 @@ function App() {
         {currentRoute === HOME_ROUTE ? (
           <WorldStateSelector isDark={isDark} onSelectRoute={handleWorldSelect} />
         ) : (
-          <>
-            <StatsBar mode={mode} isDark={isDark} />
-            <WorksSection mode={mode} isDark={isDark} />
-            <VideoReelSection mode={mode} isDark={isDark} />
-            <AboutSection name={name} mode={mode} isDark={isDark} />
-            <ProcessSection mode={mode} isDark={isDark} />
-            <ExperimentsSection mode={mode} isDark={isDark} />
-            <ContactSection name={name} mode={mode} isDark={isDark} />
-            <Footer name={name} mode={mode} isDark={isDark} />
-          </>
+          <WorldStatePage worldKey={currentRoute} isDark={isDark} onNavigate={navigateToRoute} />
         )}
       </ContentBG>
 

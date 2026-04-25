@@ -86,6 +86,111 @@ function WorldStateSelector({ isDark, onSelectRoute }) {
   );
 }
 
+/* ── World State Page ───────────────────────────────────────────────────── */
+function WorldStatePage({ worldKey, isDark, onNavigate }) {
+  const meta = WORLD_ROUTE_META[worldKey];
+  const cfg = MODES[worldKey];
+  if (!meta || !cfg) return null;
+
+  const worldOrder = MODE_KEYS;
+  const worldIdx = worldOrder.indexOf(worldKey);
+  const prevKey = worldOrder[(worldIdx - 1 + worldOrder.length) % worldOrder.length];
+  const nextKey = worldOrder[(worldIdx + 1) % worldOrder.length];
+  const galleryIdx = MODE_ART[worldKey] || [];
+  const galleryAssets = galleryIdx.map((idx) => ART_IMGS[idx]).filter(Boolean);
+  const hasVideoHero = worldKey === 'beyond' && !!REEL_VIDEO;
+  const bodyCopy = meta.description;
+
+  const baseText = tx('rgba(255,255,255,0.78)', 'rgba(0,0,0,0.78)', isDark);
+  const bodyText = tx('rgba(255,255,255,0.58)', 'rgba(0,0,0,0.58)', isDark);
+
+  return (
+    <section style={{ borderTop:'1px solid rgba(255,255,255,0.08)' }}>
+      <div style={{ maxWidth:1200, margin:'0 auto', padding:'36px 32px 80px' }}>
+        <div style={{ position:'relative', minHeight:'clamp(300px,52vw,580px)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:8, overflow:'hidden' }}>
+          {hasVideoHero ? (
+            <video
+              src={REEL_VIDEO}
+              autoPlay
+              muted
+              loop
+              playsInline
+              style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }}
+            />
+          ) : (
+            <img
+              src={meta.heroImg}
+              alt={`${meta.label} world`}
+              style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }}
+            />
+          )}
+          <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.72))' }} />
+          <div style={{ position:'absolute', left:20, bottom:20, right:20 }}>
+            <div style={{ fontFamily:'Space Mono', fontSize:10, color:`${cfg.acc}`, letterSpacing:'.2em', textTransform:'uppercase' }}>
+              World State
+            </div>
+            <h2 style={{ fontFamily:'Bebas Neue', fontSize:'clamp(66px,12vw,160px)', lineHeight:.84, margin:'8px 0 0', color:'#fff', letterSpacing:'.05em' }}>
+              {meta.label}
+            </h2>
+          </div>
+        </div>
+
+        <div style={{ marginTop:30, padding:'0 4px' }}>
+          <h3 style={{ fontFamily:'Bebas Neue', fontSize:34, letterSpacing:'.06em', margin:0, color:baseText }}>
+            Description
+          </h3>
+          <p style={{ margin:'10px 0 0', maxWidth:780, fontFamily:'Space Mono', fontSize:12, lineHeight:1.9, color:bodyText }}>
+            {bodyCopy}
+          </p>
+        </div>
+
+        <div style={{ marginTop:30 }}>
+          <h3 style={{ fontFamily:'Bebas Neue', fontSize:34, letterSpacing:'.06em', margin:'0 0 14px', color:baseText }}>
+            Gallery
+          </h3>
+          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:12 }}>
+            {galleryAssets.map((src, idx) => (
+              <div key={`${src}-${idx}`} style={{ position:'relative', borderRadius:6, overflow:'hidden', border:'1px solid rgba(255,255,255,0.12)', minHeight:180 }}>
+                <img
+                  src={src}
+                  alt={`${meta.label} gallery ${idx + 1}`}
+                  style={{ width:'100%', height:'100%', objectFit:'cover', display:'block' }}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div style={{ marginTop:32, display:'grid', gridTemplateColumns:'1fr auto 1fr', gap:12, alignItems:'center' }}>
+          <button
+            type="button"
+            onClick={() => onNavigate(prevKey)}
+            style={{ justifySelf:'start', border:`1px solid ${cfg.acc}55`, background:'transparent', color:baseText, fontFamily:'Space Mono', fontSize:11, letterSpacing:'.12em', textTransform:'uppercase', padding:'12px 16px', cursor:'pointer' }}
+          >
+            ← Prev: {WORLD_ROUTE_META[prevKey].label}
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onNavigate(HOME_ROUTE)}
+            style={{ border:`1px solid ${cfg.acc}55`, background:`${cfg.acc}16`, color:baseText, fontFamily:'Space Mono', fontSize:11, letterSpacing:'.12em', textTransform:'uppercase', padding:'12px 16px', cursor:'pointer' }}
+          >
+            Back to Home
+          </button>
+
+          <button
+            type="button"
+            onClick={() => onNavigate(nextKey)}
+            style={{ justifySelf:'end', border:`1px solid ${cfg.acc}55`, background:'transparent', color:baseText, fontFamily:'Space Mono', fontSize:11, letterSpacing:'.12em', textTransform:'uppercase', padding:'12px 16px', cursor:'pointer' }}
+          >
+            Next: {WORLD_ROUTE_META[nextKey].label} →
+          </button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ── Video Reel Section ──────────────────────────────────────────────────── */
 function VideoReelSection({ mode, isDark }) {
   if (!REEL_VIDEO) return null;
