@@ -57,14 +57,6 @@ const MODES = {
 /* ── Theme helper ────────────────────────────────────────────────────────── */
 const tx = (dark, light, isDark) => isDark ? dark : light;
 
-/* ── World → artwork index mapping ──────────────────────────────────────── */
-const MODE_ART = {
-  bloom:   [0, 4, 5],
-  core:    [1, 3, 6],
-  reclaim: [2, 3, 4],
-  beyond:  [7, 6, 1],
-};
-
 /* ── Works data ──────────────────────────────────────────────────────────── */
 const WORKS_RAW = [
   { id:1, title:'Torii Garden',        type:'Generative Art',   year:'2025', tag:'ART',   jp:'鳥居の庭', img:ART_IMGS[0], video:null, worlds:['bloom','reclaim'] },
@@ -80,6 +72,49 @@ const WORKS_RAW = [
 const WORKS = [...WORKS_RAW].sort((a,b) =>
   Math.sin(VISIT_SEED*a.id*9301+49297) - Math.sin(VISIT_SEED*b.id*9301+49297)
 );
+
+const WORK_IMAGES_BY_WORLD = MODE_KEYS.reduce((acc, worldKey) => {
+  acc[worldKey] = WORKS_RAW
+    .filter((work) => work.img && work.worlds.includes(worldKey))
+    .map((work) => work.img)
+    .filter((img, idx, arr) => arr.indexOf(img) === idx);
+  return acc;
+}, {});
+
+/* ── Curated world galleries (derived from assets + works/world mappings) ─ */
+const WORLD_GALLERIES = {
+  // soft lighting / countryside / flowers / calm city
+  bloom: [
+    ART_IMGS[0],
+    ART_IMGS[4],
+    ART_IMGS[5],
+    WORK_IMAGES_BY_WORLD.bloom[0],
+  ].filter(Boolean),
+
+  // industrial / dense / cyberpunk / mechanical
+  core: [
+    ART_IMGS[1],
+    ART_IMGS[2],
+    ART_IMGS[3],
+    ART_IMGS[6],
+  ].filter(Boolean),
+
+  // overgrown / vines / nature + structure
+  reclaim: [
+    ART_IMGS[2],
+    ART_IMGS[5],
+    ART_IMGS[4],
+    WORK_IMAGES_BY_WORLD.reclaim.find((img) => img === ART_IMGS[3]) || ART_IMGS[3],
+  ].filter(Boolean),
+
+  // space / sky / massive scale / surreal
+  beyond: [
+    ART_IMGS[7],
+    ART_IMGS[6],
+    ART_IMGS[3],
+    WORK_IMAGES_BY_WORLD.beyond.find((img) => img === ART_IMGS[1]) || ART_IMGS[1],
+  ].filter(Boolean),
+};
 
 /* ── Reel video ──────────────────────────────────────────────────────────── */
 const REEL_VIDEO = 'assets/video/reel.mp4';
