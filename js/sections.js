@@ -1,3 +1,91 @@
+/* ── World State Selector ───────────────────────────────────────────────── */
+function WorldStateSelector({ isDark, onSelectRoute }) {
+  const [hoveredKey, setHoveredKey] = useState(null);
+  const [focusedKey, setFocusedKey] = useState(null);
+  const cards = Object.values(WORLD_ROUTE_META);
+
+  const activate = (routeKey) => {
+    if (typeof onSelectRoute === 'function') onSelectRoute(routeKey);
+  };
+
+  return (
+    <section style={{ padding:'92px 32px 84px', borderTop:'1px solid rgba(255,255,255,0.08)' }}>
+      <div style={{ maxWidth:1200, margin:'0 auto' }}>
+        <h2 style={{ fontFamily:'Bebas Neue', fontSize:'clamp(52px,7vw,110px)', lineHeight:.9, letterSpacing:'.03em', textAlign:'center', color:isDark ? '#f0ece4' : '#1a1a1a' }}>
+          Select a World State
+        </h2>
+        <p style={{ margin:'16px auto 38px', maxWidth:680, textAlign:'center', fontFamily:'Space Mono', fontSize:12, lineHeight:1.8, color:tx('rgba(255,255,255,0.48)','rgba(0,0,0,0.58)',isDark) }}>
+          A collection of cinematic environments exploring the evolution of worlds.
+        </p>
+
+        <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:16 }}>
+          {cards.map((card) => {
+            const active = hoveredKey === card.key || focusedKey === card.key;
+            return (
+              <button
+                key={card.key}
+                type="button"
+                className="world-state-card"
+                onClick={() => activate(card.key)}
+                onMouseEnter={() => setHoveredKey(card.key)}
+                onMouseLeave={() => setHoveredKey(null)}
+                onFocus={() => setFocusedKey(card.key)}
+                onBlur={() => setFocusedKey(null)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    activate(card.key);
+                  }
+                }}
+                aria-label={`Enter ${card.label} world state`}
+                style={{
+                  position:'relative',
+                  minHeight:'clamp(200px,28vw,360px)',
+                  border:`1px solid ${active ? 'rgba(255,255,255,0.55)' : 'rgba(255,255,255,0.18)'}`,
+                  borderRadius:6,
+                  overflow:'hidden',
+                  background:'#111',
+                  textAlign:'left',
+                  padding:0,
+                  cursor:'pointer',
+                  transform:active ? 'scale(1.02)' : 'scale(1)',
+                  transition:'transform .24s ease, border-color .24s ease',
+                }}
+              >
+                <img
+                  src={card.heroImg}
+                  alt=""
+                  aria-hidden="true"
+                  style={{
+                    position:'absolute',
+                    inset:0,
+                    width:'100%',
+                    height:'100%',
+                    objectFit:'cover',
+                    filter:active ? 'contrast(1.14) brightness(.9) saturate(1.05)' : 'contrast(1.03) brightness(.72) saturate(.8)',
+                    transition:'filter .24s ease',
+                  }}
+                />
+                <span style={{
+                  position:'absolute', inset:0,
+                  background:active ? 'linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.6))' : 'linear-gradient(180deg, rgba(0,0,0,0.22), rgba(0,0,0,0.72))',
+                  transition:'background .24s ease',
+                }} />
+                <span style={{ position:'absolute', left:14, bottom:16, right:14 }}>
+                  <span style={{ display:'block', fontFamily:'Bebas Neue', fontSize:34, letterSpacing:'.06em', color:'#fff' }}>{card.label}</span>
+                  <span style={{ display:'block', marginTop:3, fontFamily:'Space Mono', fontSize:10, lineHeight:1.7, color:'rgba(255,255,255,0.75)' }}>
+                    {card.description}
+                  </span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 /* ── Video Reel Section ──────────────────────────────────────────────────── */
 function VideoReelSection({ mode, isDark }) {
   if (!REEL_VIDEO) return null;
