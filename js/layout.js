@@ -1,4 +1,4 @@
-/* ── Loading Screen ──────────────────────────────────────────────────────── */
+/* ── Loading Screen ───────────────────────────────────────────────────────── */
 function LoadingScreen({ mode, isDark, onDone }) {
   const cfg = MODES[mode];
   const bg = isDark ? cfg.darkBg : cfg.lightBg;
@@ -50,7 +50,7 @@ function LoadingScreen({ mode, isDark, onDone }) {
           }} />
         </div>
         <div style={{ fontFamily:'Noto Sans JP', fontWeight:700, fontSize:12, color:cfg.acc, letterSpacing:'.15em', marginTop:20, opacity:phase>=1?1:0, transition:'opacity 0.8s ease 0.8s' }}>
-          創造と芸術の世界へ
+          {cfg.jp}
         </div>
         <div style={{ fontFamily:'Space Mono', fontSize:9, color:fg2, letterSpacing:'.2em', textTransform:'uppercase', marginTop:10, opacity:phase>=1?0.6:0, transition:'opacity 0.8s ease 1s' }}>
           ENTERING {cfg.label} · {isDark ? 'NIGHT' : 'DAY'}
@@ -60,7 +60,7 @@ function LoadingScreen({ mode, isDark, onDone }) {
   );
 }
 
-/* ── Nav ─────────────────────────────────────────────────────────────────── */
+/* ── Nav ─────────────────────────────────────────────────────────────────────── */
 function Nav({ name, mode, onPortal, isDark, setIsDark }) {
   const cfg = MODES[mode];
   const [sc, setSc] = useState(false);
@@ -140,7 +140,7 @@ function Nav({ name, mode, onPortal, isDark, setIsDark }) {
   );
 }
 
-/* ── Hero ────────────────────────────────────────────────────────────────── */
+/* ── Hero ───────────────────────────────────────────────────────────────────────────── */
 function Hero({ name, mode, isDark }) {
   const cfg = MODES[mode];
   const [vis, setVis] = useState(false);
@@ -174,7 +174,7 @@ function Hero({ name, mode, isDark }) {
   return (
     <section style={{ minHeight:'100vh', display:'flex', flexDirection:'column', justifyContent:'flex-end', padding:'0 32px 72px', position:'relative', overflow:'hidden' }}>
       <div style={{ position:'absolute', top:88, right:32, textAlign:'right', opacity:vis?1:0, transition:'opacity 1.4s ease 2s', pointerEvents:'none' }}>
-        {['創造者','芸術家','製作者'].map((w,i) => (
+        {cfg.jpWords.map((w,i) => (
           <div key={i} style={{ fontFamily:'Noto Sans JP', fontWeight:900, fontSize:11, color:jpColor, letterSpacing:'.06em', lineHeight:2.1 }}>{w}</div>
         ))}
       </div>
@@ -227,7 +227,7 @@ function Hero({ name, mode, isDark }) {
   );
 }
 
-/* ── Section BG wrapper ──────────────────────────────────────────────────── */
+/* ── Section BG wrapper ────────────────────────────────────────────────────── */
 function ContentBG({ children, mode, isDark }) {
   const cfg = MODES[mode];
   const bg = isDark ? cfg.darkBg : cfg.lightBg;
@@ -239,7 +239,7 @@ function ContentBG({ children, mode, isDark }) {
   );
 }
 
-/* ── Footer ──────────────────────────────────────────────────────────────── */
+/* ── Footer ────────────────────────────────────────────────────────────────────────── */
 function Footer({ name, mode, isDark }) {
   const cfg = MODES[mode];
   const dim = tx('rgba(255,255,255,0.1)','rgba(0,0,0,0.2)',isDark);
