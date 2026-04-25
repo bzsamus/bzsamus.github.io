@@ -14,6 +14,8 @@ const VISIT_SEED = (() => {
 /* ── Random world — fresh every page load ───────────────────────────────── */
 const MODE_KEYS = ['bloom', 'core', 'reclaim', 'beyond'];
 const INITIAL_MODE = MODE_KEYS[Math.floor(Math.random() * MODE_KEYS.length)];
+const HOME_ROUTE = 'home';
+const ROUTE_KEYS = [HOME_ROUTE, ...MODE_KEYS];
 
 /* ── Hero background images (assets/image/hero/) ────────────────────────── */
 const ART_IMGS = [
@@ -27,6 +29,14 @@ const ART_IMGS = [
   'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_a40f8b1b-9f5f-44f9-a0b2-554d9e817cfd_0.png',
 ];
 ART_IMGS.forEach(s => { const i = new Image(); i.src = s; });
+
+/* ── Homepage world route metadata (single source of truth for labels) ─── */
+const WORLD_ROUTE_META = {
+  bloom:   { key:'bloom',   label:'Bloom',   heroImg:ART_IMGS[0], description:'Lush growth and warm sunlight.' },
+  core:    { key:'core',    label:'Core',    heroImg:ART_IMGS[1], description:'Mechanical density and electric structure.' },
+  reclaim: { key:'reclaim', label:'Reclaim', heroImg:ART_IMGS[2], description:'Nature returning through the ruins.' },
+  beyond:  { key:'beyond',  label:'Beyond',  heroImg:ART_IMGS[7], description:'Deep space, silence, and cosmic scale.' },
+};
 
 /* ── World config ────────────────────────────────────────────────────────── */
 const MODES = {
