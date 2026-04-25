@@ -12,7 +12,8 @@ const VISIT_SEED = (() => {
 })();
 
 /* ── Random world — fresh every page load ───────────────────────────────── */
-const MODE_KEYS = ['bloom', 'core', 'reclaim', 'beyond'];
+const WORLD_ORDER = ['bloom', 'core', 'reclaim', 'beyond'];
+const MODE_KEYS = WORLD_ORDER;
 const INITIAL_MODE = MODE_KEYS[Math.floor(Math.random() * MODE_KEYS.length)];
 const HOME_ROUTE = 'home';
 const ROUTE_KEYS = [HOME_ROUTE, ...MODE_KEYS];

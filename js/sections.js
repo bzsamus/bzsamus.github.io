@@ -93,7 +93,7 @@ function WorldStatePage({ worldKey, isDark, onNavigate }) {
   const cfg = MODES[safeWorldKey] || MODES.bloom;
   if (!meta || !cfg) return null;
 
-  const worldOrder = MODE_KEYS;
+  const worldOrder = WORLD_ORDER;
   const worldIdx = worldOrder.indexOf(safeWorldKey);
   const prevKey = worldOrder[(worldIdx - 1 + worldOrder.length) % worldOrder.length];
   const nextKey = worldOrder[(worldIdx + 1) % worldOrder.length];
@@ -162,29 +162,41 @@ function WorldStatePage({ worldKey, isDark, onNavigate }) {
         </div>
 
         <div style={{ marginTop:32, display:'grid', gridTemplateColumns:'1fr auto 1fr', gap:12, alignItems:'center' }}>
-          <button
-            type="button"
-            onClick={() => onNavigate(prevKey)}
-            style={{ justifySelf:'start', border:`1px solid ${cfg.acc}55`, background:'transparent', color:baseText, fontFamily:'Space Mono', fontSize:11, letterSpacing:'.12em', textTransform:'uppercase', padding:'12px 16px', cursor:'pointer' }}
+          <a
+            href={`/${prevKey}`}
+            aria-label={`Previous: ${WORLD_ROUTE_META[prevKey].label}`}
+            onClick={(e) => {
+              e.preventDefault();
+              onNavigate(prevKey);
+            }}
+            style={{ justifySelf:'start', border:`1px solid ${cfg.acc}55`, background:'transparent', color:baseText, fontFamily:'Space Mono', fontSize:11, letterSpacing:'.12em', textTransform:'uppercase', padding:'12px 16px', cursor:'pointer', textDecoration:'none' }}
           >
-            ← Prev: {WORLD_ROUTE_META[prevKey].label}
-          </button>
+            ← Previous: {WORLD_ROUTE_META[prevKey].label}
+          </a>
 
-          <button
-            type="button"
-            onClick={() => onNavigate(HOME_ROUTE)}
-            style={{ border:`1px solid ${cfg.acc}55`, background:`${cfg.acc}16`, color:baseText, fontFamily:'Space Mono', fontSize:11, letterSpacing:'.12em', textTransform:'uppercase', padding:'12px 16px', cursor:'pointer' }}
+          <a
+            href="/"
+            aria-label="Back to Home"
+            onClick={(e) => {
+              e.preventDefault();
+              onNavigate(HOME_ROUTE);
+            }}
+            style={{ border:`1px solid ${cfg.acc}55`, background:`${cfg.acc}16`, color:baseText, fontFamily:'Space Mono', fontSize:11, letterSpacing:'.12em', textTransform:'uppercase', padding:'12px 16px', cursor:'pointer', textDecoration:'none' }}
           >
             Back to Home
-          </button>
+          </a>
 
-          <button
-            type="button"
-            onClick={() => onNavigate(nextKey)}
-            style={{ justifySelf:'end', border:`1px solid ${cfg.acc}55`, background:'transparent', color:baseText, fontFamily:'Space Mono', fontSize:11, letterSpacing:'.12em', textTransform:'uppercase', padding:'12px 16px', cursor:'pointer' }}
+          <a
+            href={`/${nextKey}`}
+            aria-label={`Next: ${WORLD_ROUTE_META[nextKey].label}`}
+            onClick={(e) => {
+              e.preventDefault();
+              onNavigate(nextKey);
+            }}
+            style={{ justifySelf:'end', border:`1px solid ${cfg.acc}55`, background:'transparent', color:baseText, fontFamily:'Space Mono', fontSize:11, letterSpacing:'.12em', textTransform:'uppercase', padding:'12px 16px', cursor:'pointer', textDecoration:'none' }}
           >
             Next: {WORLD_ROUTE_META[nextKey].label} →
-          </button>
+          </a>
         </div>
       </div>
     </section>
