@@ -2,11 +2,27 @@
 function WorldStateSelector({ isDark, onSelectRoute }) {
   const [hoveredKey, setHoveredKey] = useState(null);
   const [focusedKey, setFocusedKey] = useState(null);
+  const videoRefs = useRef({});
   const cards = Object.values(WORLD_ROUTE_META);
 
   const activate = (routeKey) => {
     if (typeof onSelectRoute === 'function') onSelectRoute(routeKey);
   };
+
+  // Single video plays at a time — start hovered, pause/reset others.
+  useEffect(() => {
+    Object.entries(videoRefs.current).forEach(([k, vid]) => {
+      if (!vid) return;
+      if (k === hoveredKey || k === focusedKey) {
+        vid.currentTime = 0;
+        const p = vid.play();
+        if (p && p.catch) p.catch(() => {});
+      } else {
+        vid.pause();
+        try { vid.currentTime = 0; } catch (_) {}
+      }
+    });
+  }, [hoveredKey, focusedKey]);
 
   return (
     <section style={{ padding:'92px 32px 84px', borderTop:'1px solid rgba(255,255,255,0.08)' }}>
@@ -21,11 +37,12 @@ function WorldStateSelector({ isDark, onSelectRoute }) {
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:16 }}>
           {cards.map((card) => {
             const active = hoveredKey === card.key || focusedKey === card.key;
+            const hoverVideo = WORLD_HOVER_VIDEO[card.key] || null;
             return (
               <button
                 key={card.key}
                 type="button"
-                className="world-state-card zoom-surface"
+                className={`world-state-card zoom-surface${active ? ' is-hover' : ''}`}
                 onClick={() => activate(card.key)}
                 onMouseEnter={() => setHoveredKey(card.key)}
                 onMouseLeave={() => setHoveredKey(null)}
@@ -65,6 +82,14 @@ function WorldStateSelector({ isDark, onSelectRoute }) {
                     transition:'filter .24s ease',
                   }}
                 />
+                {hoverVideo && (
+                  <video
+                    ref={(el) => { videoRefs.current[card.key] = el; }}
+                    src={hoverVideo}
+                    muted loop playsInline preload="metadata"
+                    aria-hidden="true"
+                  />
+                )}
                 <span style={{
                   position:'absolute', inset:0,
                   background:active ? 'linear-gradient(180deg, rgba(0,0,0,0.05), rgba(0,0,0,0.6))' : 'linear-gradient(180deg, rgba(0,0,0,0.22), rgba(0,0,0,0.72))',
@@ -122,13 +147,24 @@ function WorldStatePage({ worldKey, isDark, onNavigate }) {
   const worldIdx = worldOrder.indexOf(safeWorldKey);
   const prevKey = worldOrder[(worldIdx - 1 + worldOrder.length) % worldOrder.length];
   const nextKey = worldOrder[(worldIdx + 1) % worldOrder.length];
-  const galleryAssets = WORLD_GALLERIES[safeWorldKey] || [];
-  const hasVideoHero = safeWorldKey === 'beyond' && !!REEL_VIDEO;
+  const heroVideo = WORLD_VIDEO[safeWorldKey] || null;
   const bodyCopy = WORLD_DESCRIPTIONS[safeWorldKey] ?? WORLD_DESCRIPTIONS.bloom ?? '';
+  const worldWorks = WORKS_RAW.filter(w => w.worlds.includes(safeWorldKey));
   const heroRef = useRef();
+  const [overlayWork, setOverlayWork] = useState(null);
+  const [vis, setVis] = useState(false);
 
   const baseText = tx('rgba(255,255,255,0.78)', 'rgba(0,0,0,0.78)', isDark);
   const bodyText = tx('rgba(255,255,255,0.58)', 'rgba(0,0,0,0.58)', isDark);
+  const subColor = 'rgba(255,255,255,0.55)';
+  const mq = isDark ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.22)';
+  const jpColor = isDark ? 'rgba(255,255,255,0.12)' : 'rgba(255,255,255,0.18)';
+
+  useEffect(() => {
+    setVis(false);
+    const t = setTimeout(() => setVis(true), 80);
+    return () => clearTimeout(t);
+  }, [safeWorldKey]);
 
   useEffect(() => {
     const heroEl = heroRef.current;
@@ -140,7 +176,7 @@ function WorldStatePage({ worldKey, isDark, onNavigate }) {
       const rect = heroEl.getBoundingClientRect();
       const viewH = window.innerHeight || 1;
       const progress = Math.max(0, Math.min(1, (viewH - rect.top) / (viewH + rect.height)));
-      const offset = (progress - 0.5) * 36;
+      const offset = (progress - 0.5) * 48;
       heroEl.style.setProperty('--hero-parallax', `${offset.toFixed(2)}px`);
     };
 
@@ -159,98 +195,155 @@ function WorldStatePage({ worldKey, isDark, onNavigate }) {
     };
   }, [safeWorldKey]);
 
+  const tr = d => ({
+    opacity: vis ? 1 : 0,
+    transform: vis ? 'none' : 'translateY(28px)',
+    transition: `opacity .9s ease ${d}s, transform 1s cubic-bezier(.22,1,.36,1) ${d}s`,
+  });
+
   return (
-    <section style={{ borderTop:'1px solid rgba(255,255,255,0.08)' }}>
-      <div style={{ maxWidth:1200, margin:'0 auto', padding:'36px 32px 80px' }}>
-        <div ref={heroRef} className="world-hero" style={{ position:'relative', minHeight:'clamp(300px,52vw,580px)', border:'1px solid rgba(255,255,255,0.2)', borderRadius:8, overflow:'hidden' }}>
-          {hasVideoHero ? (
-            <video
-              src={REEL_VIDEO}
-              autoPlay
-              muted
-              loop
-              playsInline
-              className="world-hero-bg"
-              style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }}
-            />
-          ) : (
-            <img
-              src={meta.heroImg}
-              alt={`${meta.label} world`}
-              className="world-hero-bg"
-              style={{ position:'absolute', inset:0, width:'100%', height:'100%', objectFit:'cover' }}
-            />
-          )}
-          <div style={{ position:'absolute', inset:0, background:'linear-gradient(180deg, rgba(0,0,0,0.15), rgba(0,0,0,0.72))' }} />
-          <div style={{ position:'absolute', left:20, bottom:20, right:20 }}>
-            <div style={{ fontFamily:'Space Mono', fontSize:10, color:`${cfg.acc}`, letterSpacing:'.2em', textTransform:'uppercase' }}>
-              World State
-            </div>
-            <h2 style={{ fontFamily:'Bebas Neue', fontSize:'clamp(66px,12vw,160px)', lineHeight:.84, margin:'8px 0 0', color:'#fff', letterSpacing:'.05em' }}>
-              {meta.label}
-            </h2>
+    <>
+      {/* ─── Full-bleed hero ─── */}
+      <section ref={heroRef} className="world-hero world-hero-full">
+        {heroVideo ? (
+          <video
+            key={heroVideo}
+            src={heroVideo}
+            autoPlay muted loop playsInline
+            className="world-hero-bg"
+          />
+        ) : (
+          <img
+            src={meta.heroImg}
+            alt={`${meta.label} world`}
+            className="world-hero-bg"
+          />
+        )}
+        <div className="world-hero-vignette" />
+
+        {/* Top-left day/night badge */}
+        <div style={{ position:'absolute', top:90, left:32, zIndex:5, opacity:vis?.85:0, transition:'opacity 1s ease .8s' }}>
+          <div style={{ fontFamily:'Space Mono', fontSize:8, color:cfg.acc, letterSpacing:'.18em', border:`1px solid ${cfg.acc}55`, padding:'4px 12px', display:'inline-flex', alignItems:'center', gap:8, backdropFilter:'blur(6px)', background:`${cfg.acc}10` }}>
+            <span style={{ width:5, height:5, borderRadius:'50%', background:cfg.acc, display:'inline-block', boxShadow:`0 0 6px ${cfg.acc}` }} />
+            {cfg.label} · {isDark ? 'NIGHT' : 'DAY'}
           </div>
         </div>
 
-        <div style={{ marginTop:30, padding:'0 4px' }}>
-          <h3 style={{ fontFamily:'Bebas Neue', fontSize:34, letterSpacing:'.06em', margin:0, color:baseText }}>
-            Description
-          </h3>
-          <p style={{ margin:'10px 0 0', maxWidth:780, fontFamily:'Space Mono', fontSize:12, lineHeight:1.9, color:bodyText }}>
+        {/* Top-right JP keywords */}
+        <div style={{ position:'absolute', top:90, right:32, textAlign:'right', zIndex:5, opacity:vis?1:0, transition:'opacity 1.4s ease 1s', pointerEvents:'none' }}>
+          {cfg.jpWords.map((w,i) => (
+            <div key={i} style={{ fontFamily:'Noto Sans JP', fontWeight:900, fontSize:11, color:jpColor, letterSpacing:'.06em', lineHeight:2.1 }}>{w}</div>
+          ))}
+        </div>
+
+        {/* Bottom-left main title */}
+        <div style={{ position:'absolute', left:32, right:32, bottom:96, zIndex:5 }}>
+          <div style={{ fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.22em', textTransform:'uppercase', marginBottom:14, ...tr(.15) }}>
+            ✦ World State · {String(worldIdx + 1).padStart(2,'0')} / {String(worldOrder.length).padStart(2,'0')} ✦
+          </div>
+          <h1 style={{
+            ...tr(.05),
+            fontFamily:'Bebas Neue',
+            fontSize:'clamp(72px,14vw,180px)',
+            lineHeight:.86,
+            letterSpacing:'.05em',
+            color:'#fff',
+            margin:0,
+          }}>
+            {meta.label}
+          </h1>
+          <div style={{ marginTop:22, display:'flex', alignItems:'center', gap:16, ...tr(.4) }}>
+            <div style={{ width:36, height:1, background:`linear-gradient(90deg,${cfg.acc},transparent)` }} />
+            <span style={{ fontFamily:'Noto Sans JP', fontWeight:700, fontSize:14, color:cfg.acc, letterSpacing:'.1em' }}>{cfg.jp}</span>
+          </div>
+          <p style={{ marginTop:18, maxWidth:560, fontFamily:'Space Mono', fontSize:13, lineHeight:1.85, color:subColor, ...tr(.55) }}>
             {bodyCopy}
           </p>
         </div>
 
-        <div style={{ marginTop:30 }}>
-          <h3 style={{ fontFamily:'Bebas Neue', fontSize:34, letterSpacing:'.06em', margin:'0 0 14px', color:baseText }}>
-            Gallery
-          </h3>
-          <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(180px,1fr))', gap:12 }}>
-            {galleryAssets.map((src, idx) => (
-              <WorldGalleryCard key={`${src}-${idx}`} src={src} idx={idx} label={meta.label} />
+        {/* Scroll cue */}
+        <div style={{ position:'absolute', left:32, bottom:42, display:'flex', alignItems:'center', gap:12, opacity:vis?.5:0, transition:'opacity 1.2s ease 1.6s', zIndex:5 }}>
+          <div style={{ width:1, height:36, background:`linear-gradient(${cfg.acc},transparent)`, animation:'scrollPulse 2s ease infinite' }} />
+          <span style={{ fontFamily:'Space Mono', fontSize:9, color:'rgba(255,255,255,0.4)', letterSpacing:'.2em', textTransform:'uppercase' }}>scroll</span>
+        </div>
+
+        {/* Bottom marquee */}
+        <div style={{ position:'absolute', bottom:0, left:0, right:0, borderTop:'1px solid rgba(255,255,255,0.08)', overflow:'hidden', padding:'10px 0', opacity:vis?1:0, transition:'opacity 1.5s ease 1.8s', zIndex:5 }}>
+          <div style={{ display:'flex', whiteSpace:'nowrap', animation:'mq 22s linear infinite', width:'max-content' }}>
+            {[...Array(10)].map((_,i) => (
+              <span key={i} style={{ fontFamily:'Space Mono', fontSize:10, color:mq, letterSpacing:'.2em', textTransform:'uppercase', padding:'0 28px' }}>
+                {meta.label} ✦ {cfg.jpWords.join(' ✦ ')} ✦
+              </span>
             ))}
           </div>
         </div>
+      </section>
 
-        <div style={{ marginTop:32, display:'grid', gridTemplateColumns:'1fr auto 1fr', gap:12, alignItems:'center' }}>
+      {/* ─── Below-fold content ─── */}
+      <section style={{ borderTop:'1px solid rgba(255,255,255,0.08)' }}>
+        <div style={{ maxWidth:1200, margin:'0 auto', padding:'80px 32px 60px' }}>
+          <div style={{ fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.2em', textTransform:'uppercase', marginBottom:18 }}>
+            About this world
+          </div>
+          <p style={{ margin:0, maxWidth:780, fontFamily:'Space Mono', fontSize:13, lineHeight:1.95, color:bodyText }}>
+            {bodyCopy}
+          </p>
+        </div>
+      </section>
+
+      {/* Works for this world */}
+      {worldWorks.length > 0 && (
+        <section style={{ borderTop:`1px solid ${tx(cfg.acc+'18',cfg.acc+'28',isDark)}` }}>
+          <div style={{ padding:'72px 32px 24px' }}>
+            <div style={{ fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.2em', textTransform:'uppercase', marginBottom:14 }}>
+              Works · {String(worldWorks.length).padStart(2,'0')} pieces in {meta.label}
+            </div>
+            <h2 style={{ fontFamily:'Bebas Neue', fontSize:'clamp(48px,7vw,96px)', lineHeight:.9, letterSpacing:'.03em', margin:0, color:baseText }}>
+              ART FROM THIS<br /><span style={{ color:cfg.acc }}>WORLD STATE.</span>
+            </h2>
+          </div>
+          <div>
+            {worldWorks.map((w, i) => (
+              <WorkCardV key={w.id} work={w} cfg={cfg} index={i} isDark={isDark} onOpen={setOverlayWork} />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {/* Prev / Home / Next nav */}
+      <section style={{ borderTop:`1px solid ${tx(cfg.acc+'18',cfg.acc+'28',isDark)}` }}>
+        <div style={{ maxWidth:1200, margin:'0 auto', padding:'40px 32px 72px', display:'grid', gridTemplateColumns:'1fr auto 1fr', gap:12, alignItems:'center' }}>
           <a
             href={`/${prevKey}`}
             aria-label={`Previous: ${WORLD_ROUTE_META[prevKey].label}`}
-            onClick={(e) => {
-              e.preventDefault();
-              onNavigate(prevKey);
-            }}
+            onClick={(e) => { e.preventDefault(); onNavigate(prevKey); }}
             style={{ justifySelf:'start', border:`1px solid ${cfg.acc}55`, background:'transparent', color:baseText, fontFamily:'Space Mono', fontSize:11, letterSpacing:'.12em', textTransform:'uppercase', padding:'12px 16px', cursor:'pointer', textDecoration:'none' }}
           >
             ← Previous: {WORLD_ROUTE_META[prevKey].label}
           </a>
-
           <a
             href="/"
             aria-label="Back to Home"
-            onClick={(e) => {
-              e.preventDefault();
-              onNavigate(HOME_ROUTE);
-            }}
+            onClick={(e) => { e.preventDefault(); onNavigate(HOME_ROUTE); }}
             style={{ border:`1px solid ${cfg.acc}55`, background:`${cfg.acc}16`, color:baseText, fontFamily:'Space Mono', fontSize:11, letterSpacing:'.12em', textTransform:'uppercase', padding:'12px 16px', cursor:'pointer', textDecoration:'none' }}
           >
             Back to Home
           </a>
-
           <a
             href={`/${nextKey}`}
             aria-label={`Next: ${WORLD_ROUTE_META[nextKey].label}`}
-            onClick={(e) => {
-              e.preventDefault();
-              onNavigate(nextKey);
-            }}
+            onClick={(e) => { e.preventDefault(); onNavigate(nextKey); }}
             style={{ justifySelf:'end', border:`1px solid ${cfg.acc}55`, background:'transparent', color:baseText, fontFamily:'Space Mono', fontSize:11, letterSpacing:'.12em', textTransform:'uppercase', padding:'12px 16px', cursor:'pointer', textDecoration:'none' }}
           >
             Next: {WORLD_ROUTE_META[nextKey].label} →
           </a>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {overlayWork && (
+        <ProjectOverlay work={overlayWork} cfg={cfg} isDark={isDark} onClose={() => setOverlayWork(null)} />
+      )}
+    </>
   );
 }
 

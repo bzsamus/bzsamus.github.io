@@ -1,4 +1,10 @@
-/* ── Loading Screen ───────────────────────────────────────────────────────── */
+/* ── Loading Screen ───────────────────────────────────────────────────────
+   Art-house phased reveal:
+   0-300ms   : background fades in (world hero image, blurred)
+   300-2200  : MR5AM letters stagger in, progress bar fills, JP + entering text
+   2200-3200 : letterbox bars slide IN from top+bottom and meet at center
+   3200-3600 : bars slide OUT (top bar continues down, bottom continues up)
+                — film-wipe through frame, revealing the site beneath. */
 function LoadingScreen({ mode, isDark, onDone }) {
   const cfg = MODES[mode];
   const bg = isDark ? cfg.darkBg : cfg.lightBg;
@@ -6,62 +12,99 @@ function LoadingScreen({ mode, isDark, onDone }) {
   const fg2 = isDark ? 'rgba(255,255,255,0.35)' : 'rgba(0,0,0,0.4)';
   const [phase, setPhase] = useState(0);
   const name = 'MR5AM';
+  const heroSrc = ART_IMGS[VISIT_SEED % ART_IMGS.length];
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase(1), 300);
-    const t2 = setTimeout(() => setPhase(2), 2600);
-    const t3 = setTimeout(onDone, 3400);
-    return () => [t1,t2,t3].forEach(clearTimeout);
+    const t2 = setTimeout(() => setPhase(2), 2200); // bars close
+    const t3 = setTimeout(() => setPhase(3), 3200); // bars open through
+    const t4 = setTimeout(onDone, 3600);
+    return () => [t1,t2,t3,t4].forEach(clearTimeout);
   }, []);
+
+  // Bar transforms — each 50vh tall, paired top/bottom.
+  // closed = both at 0%; intro = offscreen (top -100%, bot 100%); exit = sweep through (top 100%, bot -100%).
+  let topY = '-100%', botY = '100%';
+  if (phase >= 2 && phase < 3) { topY = '0%'; botY = '0%'; }
+  else if (phase >= 3) { topY = '100%'; botY = '-100%'; }
+
+  const barBase = {
+    position:'absolute', left:0, right:0, height:'50vh',
+    transition:'transform .55s cubic-bezier(.77,0,.18,1)',
+    willChange:'transform', zIndex:3,
+  };
+  const barTint = `rgba(${cfg.rgb.join(',')},0.18)`;
 
   return (
     <div style={{
-      position:'fixed', inset:0, zIndex:2000, background:bg,
-      display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
-      clipPath: phase === 2 ? 'circle(0% at 50% 50%)' : 'circle(150% at 50% 50%)',
-      transition: phase === 2 ? 'clip-path 0.85s cubic-bezier(.77,0,.18,1)' : 'none',
-      pointerEvents: phase === 2 ? 'none' : 'all',
+      position:'fixed', inset:0, zIndex:2000, overflow:'hidden',
+      pointerEvents: phase >= 3 ? 'none' : 'all',
     }}>
+      {/* Background hero image (always present, fades in) */}
       <div style={{
         position:'absolute', inset:0, overflow:'hidden',
-        opacity: phase >= 1 ? (isDark ? 0.12 : 0.18) : 0,
-        transition:'opacity 1.2s ease 0.4s',
+        opacity: phase >= 1 ? 1 : 0,
+        transition:'opacity 1.2s ease',
       }}>
-        <img src={ART_IMGS[VISIT_SEED % ART_IMGS.length]} alt="" style={{ width:'100%', height:'100%', objectFit:'cover', filter:'blur(2px)' }} />
+        <img src={heroSrc} alt="" style={{ width:'100%', height:'100%', objectFit:'cover', filter:'blur(8px) saturate(0.6) brightness(0.45)', transform:'scale(1.08)' }} />
+        <div style={{ position:'absolute', inset:0, background:`radial-gradient(ellipse 70% 60% at 50% 55%, transparent 0%, ${bg} 85%)` }} />
+        <div style={{ position:'absolute', inset:0, background:bg, opacity: isDark ? 0.55 : 0.7 }} />
       </div>
-      <div style={{ position:'absolute', inset:0, background:`radial-gradient(ellipse 70% 70% at 50% 50%, transparent 30%, ${bg} 80%)` }} />
-      <div style={{ position:'relative', zIndex:1, textAlign:'center' }}>
-        <div style={{ fontFamily:'Bebas Neue', fontSize:'clamp(64px,12vw,160px)', lineHeight:.9, letterSpacing:'.06em', color:fg, display:'flex', justifyContent:'center' }}>
-          {name.split('').map((ch, i) => (
-            <span key={i} style={{
-              display:'inline-block',
-              opacity: phase >= 1 ? 1 : 0,
-              transform: phase >= 1 ? 'none' : 'translateY(20px)',
-              transition: `opacity 0.5s ease ${0.08 + i*0.06}s, transform 0.6s cubic-bezier(.22,1,.36,1) ${0.08 + i*0.06}s`,
-            }}>{ch}</span>
-          ))}
-        </div>
-        <div style={{ margin:'24px auto 0', width:200, height:1, background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)', position:'relative', overflow:'hidden' }}>
-          <div style={{
-            position:'absolute', top:0, left:0, height:'100%', background:cfg.acc,
-            width: phase >= 1 ? '100%' : '0%',
-            transition:'width 1.8s cubic-bezier(.22,1,.36,1) 0.3s',
-            boxShadow:`0 0 8px ${cfg.acc}`,
-          }} />
-        </div>
-        <div style={{ fontFamily:'Noto Sans JP', fontWeight:700, fontSize:12, color:cfg.acc, letterSpacing:'.15em', marginTop:20, opacity:phase>=1?1:0, transition:'opacity 0.8s ease 0.8s' }}>
-          {cfg.jp}
-        </div>
-        <div style={{ fontFamily:'Space Mono', fontSize:9, color:fg2, letterSpacing:'.2em', textTransform:'uppercase', marginTop:10, opacity:phase>=1?0.6:0, transition:'opacity 0.8s ease 1s' }}>
-          ENTERING {cfg.label} · {isDark ? 'NIGHT' : 'DAY'}
+
+      {/* Center stack — name, bar, JP, entering label */}
+      <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', zIndex:2,
+        opacity: phase >= 2 ? 0 : 1,
+        transition:'opacity .4s ease',
+      }}>
+        <div style={{ textAlign:'center' }}>
+          <div style={{ fontFamily:'Bebas Neue', fontSize:'clamp(64px,12vw,160px)', lineHeight:.9, letterSpacing:'.06em', color:fg, display:'flex', justifyContent:'center' }}>
+            {name.split('').map((ch, i) => (
+              <span key={i} style={{
+                display:'inline-block',
+                opacity: phase >= 1 ? 1 : 0,
+                transform: phase >= 1 ? 'none' : 'translateY(20px)',
+                transition: `opacity 0.5s ease ${0.08 + i*0.06}s, transform 0.6s cubic-bezier(.22,1,.36,1) ${0.08 + i*0.06}s`,
+              }}>{ch}</span>
+            ))}
+          </div>
+          <div style={{ margin:'24px auto 0', width:200, height:1, background: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)', position:'relative', overflow:'hidden' }}>
+            <div style={{
+              position:'absolute', top:0, left:0, height:'100%', background:cfg.acc,
+              width: phase >= 1 ? '100%' : '0%',
+              transition:'width 1.6s cubic-bezier(.22,1,.36,1) 0.3s',
+              boxShadow:`0 0 8px ${cfg.acc}`,
+            }} />
+          </div>
+          <div style={{ fontFamily:'Noto Sans JP', fontWeight:700, fontSize:12, color:cfg.acc, letterSpacing:'.15em', marginTop:20, opacity:phase>=1?1:0, transition:'opacity 0.8s ease 0.8s' }}>
+            {cfg.jp}
+          </div>
+          <div style={{ fontFamily:'Space Mono', fontSize:9, color:fg2, letterSpacing:'.2em', textTransform:'uppercase', marginTop:10, opacity:phase>=1?0.7:0, transition:'opacity 0.8s ease 1s' }}>
+            ENTERING {cfg.label} · {isDark ? 'NIGHT' : 'DAY'}
+          </div>
         </div>
       </div>
+
+      {/* Letterbox bars — close, then sweep through */}
+      <div style={{ ...barBase, top:0, transform:`translateY(${topY})`,
+        background:`linear-gradient(180deg, ${bg} 0%, ${bg} 70%, ${barTint} 100%)` }} />
+      <div style={{ ...barBase, bottom:0, transform:`translateY(${botY})`,
+        background:`linear-gradient(0deg, ${bg} 0%, ${bg} 70%, ${barTint} 100%)` }} />
+
+      {/* Center seam line — flashes when bars meet */}
+      <div style={{
+        position:'absolute', left:0, right:0, top:'50%', height:1, zIndex:4,
+        background:cfg.acc, boxShadow:`0 0 18px ${cfg.acc}, 0 0 5px ${cfg.acc}`,
+        opacity: phase === 2 ? 1 : 0,
+        transform: phase === 2 ? 'scaleX(1)' : 'scaleX(0.1)',
+        transformOrigin:'center',
+        transition:'opacity .25s ease, transform .35s cubic-bezier(.22,1,.36,1)',
+      }} />
     </div>
   );
 }
 
 /* ── Nav ─────────────────────────────────────────────────────────────────────── */
-function Nav({ name, mode, onPortal, isDark, setIsDark }) {
+function Nav({ name, mode, onPortal, onAnchor, isDark, setIsDark }) {
   const cfg = MODES[mode];
   const [sc, setSc] = useState(false);
   const [hovOrb, setHovOrb] = useState(null);
@@ -126,11 +169,12 @@ function Nav({ name, mode, onPortal, isDark, setIsDark }) {
       </div>
 
       <div style={{ display:'flex', gap:28 }}>
-        {['work','about','contact'].map(s => (
+        {['about','contact'].map(s => (
           <a key={s} href={`#${s}`} style={{
             fontFamily:'Space Mono', fontSize:9, letterSpacing:'.14em', textTransform:'uppercase',
             color:linkColor, textDecoration:'none', transition:'color .2s',
           }}
+          onClick={e => { if (typeof onAnchor === 'function') { e.preventDefault(); onAnchor(s); } }}
           onMouseEnter={e => e.target.style.color = cfg.acc}
           onMouseLeave={e => e.target.style.color = linkColor}
           >{s}</a>
@@ -224,12 +268,14 @@ function Hero({ name, mode, isDark }) {
 }
 
 /* ── Section BG wrapper ────────────────────────────────────────────────────── */
-function ContentBG({ children, mode, isDark }) {
+function ContentBG({ children, mode, isDark, noRamp }) {
   const cfg = MODES[mode];
   const bg = isDark ? cfg.darkBg : cfg.lightBg;
   return (
     <div style={{ position:'relative', zIndex:7 }}>
-      <div style={{ height:90, background:`linear-gradient(to bottom, transparent, ${bg})`, pointerEvents:'none' }} />
+      {!noRamp && (
+        <div style={{ height:90, background:`linear-gradient(to bottom, transparent, ${bg})`, pointerEvents:'none' }} />
+      )}
       <div style={{ background:bg, transition:'background 0.8s ease' }}>{children}</div>
     </div>
   );

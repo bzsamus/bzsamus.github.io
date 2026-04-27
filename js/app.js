@@ -14,9 +14,10 @@ function App() {
   const [renderedRoute, setRenderedRoute] = useState(() => parseRouteFromPath(window.location.pathname));
   const [routeTransitionClass, setRouteTransitionClass] = useState('');
   const [mode, setMode] = useState(INITIAL_MODE);
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(() => Math.random() > 0.5);
   const [tweaksOn, setTweaksOn] = useState(false);
   const [portalTarget, setPortalTarget] = useState(null);
+  const pendingScrollRef = useRef(null);
 
   const triggerPortal = (newMode) => {
     if (portalTarget || newMode === mode) return;
@@ -122,6 +123,27 @@ function App() {
     if (!MODE_KEYS.includes(routeKey)) return;
     navigateToRoute(routeKey);
   };
+  const handleNavAnchor = (anchor) => {
+    if (currentRoute === HOME_ROUTE) {
+      const el = document.getElementById(anchor);
+      if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+      return;
+    }
+    pendingScrollRef.current = anchor;
+    navigateToRoute(HOME_ROUTE);
+  };
+
+  // After bounce-home settles, scroll to the queued anchor.
+  useEffect(() => {
+    if (renderedRoute !== HOME_ROUTE || !pendingScrollRef.current) return;
+    const anchor = pendingScrollRef.current;
+    pendingScrollRef.current = null;
+    const t = setTimeout(() => {
+      const el = document.getElementById(anchor);
+      if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
+    }, 80);
+    return () => clearTimeout(t);
+  }, [renderedRoute]);
 
   return (
     <>
@@ -131,23 +153,22 @@ function App() {
       <WeatherCanvas mode={mode} isDark={isDark} />
       <GrainOverlay isDark={isDark} />
 
-      <PortalCanvas
+      <CurtainTransition
         targetMode={portalTarget}
         onMidpoint={() => { if (portalTarget) setMode(portalTarget); }}
         onComplete={() => setPortalTarget(null)}
       />
 
       <div style={{ position:'relative', zIndex:7 }}>
-        <Nav name={name} mode={mode} onPortal={handlePortalRoute} isDark={isDark} setIsDark={setIsDark} />
-        <Hero name={name} mode={mode} isDark={isDark} />
+        <Nav name={name} mode={mode} onPortal={handlePortalRoute} onAnchor={handleNavAnchor} isDark={isDark} setIsDark={setIsDark} />
+        {renderedRoute === HOME_ROUTE && <Hero name={name} mode={mode} isDark={isDark} />}
       </div>
 
-      <ContentBG mode={mode} isDark={isDark}>
+      <ContentBG mode={mode} isDark={isDark} noRamp={renderedRoute !== HOME_ROUTE}>
         <div className={`route-transition-shell ${routeTransitionClass}`.trim()}>
           {renderedRoute === HOME_ROUTE ? (
             <>
               <WorldStateSelector isDark={isDark} onSelectRoute={handleWorldSelect} />
-              <WorksSection mode={mode} isDark={isDark} />
               <AboutSection name={name} mode={mode} isDark={isDark} />
               <ContactSection name={name} mode={mode} isDark={isDark} />
             </>
