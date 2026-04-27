@@ -253,60 +253,64 @@ function WeatherCanvas({ mode, isDark }) {
   return <canvas ref={canvasRef} style={{ position:'fixed', inset:0, zIndex:6, pointerEvents:'none' }} />;
 }
 
-/* ── Portal Canvas ───────────────────────────────────────────────────────────────── */
-function PortalCanvas({ targetMode, onMidpoint, onComplete }) {
-  const ref = useRef();
+/* ── Curtain Transition ─────────────────────────────────────────────────────
+   Replaces the canvas portal with a GPU-only letterbox sweep — performant,
+   art-house feel. Phases: entering (300ms) → holding (100ms) → exiting (300ms). */
+function CurtainTransition({ targetMode, onMidpoint, onComplete }) {
+  const [phase, setPhase] = useState('idle'); // idle | entering | holding | exiting
+  const onMidRef = useRef(onMidpoint);
+  const onDoneRef = useRef(onComplete);
+  onMidRef.current = onMidpoint;
+  onDoneRef.current = onComplete;
+
   useEffect(() => {
-    if (!targetMode) return;
-    const canvas = ref.current;
-    const ctx = canvas.getContext('2d');
-    const W = canvas.width = window.innerWidth;
-    const H = canvas.height = window.innerHeight;
-    const cx = W / 2, cy = H / 2;
-    const cfg = MODES[targetMode];
-    const [pr, pg, pb] = cfg.rgb;
-    const TOTAL = 80, MID = 38;
-    let frame = 0, raf;
-    const pts = Array.from({ length: 90 }, (_, i) => ({
-      ang: (i / 90) * Math.PI * 2 + Math.random() * .2,
-      rad: 60 + Math.random() * 220,
-      spd: .04 + Math.random() * .06,
-      sz: Math.random() * 3 + 1,
-    }));
-    const animate = () => {
-      ctx.clearRect(0, 0, W, H);
-      const prog = frame / TOTAL;
-      const bgA = Math.min(prog * 4, 1) * .92;
-      ctx.fillStyle = `rgba(0,0,0,${bgA})`;
-      ctx.fillRect(0, 0, W, H);
-      const pull = frame < MID ? frame / MID : 1;
-      pts.forEach(p => {
-        p.ang += p.spd * (1 + prog);
-        const r = p.rad * (1 - pull * .75) + 5;
-        const x = cx + Math.cos(p.ang) * r;
-        const y = cy + Math.sin(p.ang) * r;
-        const a = (.5 + .5 * Math.sin(p.ang)) * bgA;
-        ctx.beginPath();
-        ctx.fillStyle = `rgba(${pr},${pg},${pb},${a})`;
-        ctx.arc(x, y, p.sz, 0, Math.PI * 2);
-        ctx.fill();
-      });
-      const glowR = (frame < MID ? (frame / MID) : (1 + (frame - MID) / (TOTAL - MID) * 3)) * Math.min(W, H) * .35;
-      const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowR);
-      g.addColorStop(0, `rgba(${pr},${pg},${pb},${.7 * bgA})`);
-      g.addColorStop(.35, `rgba(${pr},${pg},${pb},${.25 * bgA})`);
-      g.addColorStop(1, `rgba(${pr},${pg},${pb},0)`);
-      ctx.beginPath(); ctx.fillStyle = g; ctx.arc(cx, cy, glowR, 0, Math.PI * 2); ctx.fill();
-      if (frame === MID) onMidpoint();
-      frame++;
-      if (frame < TOTAL) { raf = requestAnimationFrame(animate); } else { onComplete(); }
-    };
-    animate();
-    return () => cancelAnimationFrame(raf);
+    if (!targetMode) { setPhase('idle'); return; }
+    setPhase('entering');
+    const t1 = setTimeout(() => {
+      onMidRef.current && onMidRef.current();
+      setPhase('holding');
+    }, 300);
+    const t2 = setTimeout(() => setPhase('exiting'), 400);
+    const t3 = setTimeout(() => {
+      setPhase('idle');
+      onDoneRef.current && onDoneRef.current();
+    }, 720);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
   }, [targetMode]);
 
   if (!targetMode) return null;
-  return <canvas ref={ref} style={{ position:'fixed', inset:0, zIndex:9000, pointerEvents:'all' }} />;
+  const cfg = MODES[targetMode];
+  const [pr, pg, pb] = cfg.rgb;
+  const tint = `rgba(${pr},${pg},${pb},0.18)`;
+
+  let topY, botY;
+  if (phase === 'entering' || phase === 'holding') { topY = '0%'; botY = '0%'; }
+  else if (phase === 'exiting') { topY = '100%'; botY = '-100%'; }
+  else { topY = '-100%'; botY = '100%'; }
+
+  const seamVisible = phase === 'holding';
+  const barBase = {
+    position:'absolute', left:0, right:0, height:'50vh',
+    transition:'transform .3s cubic-bezier(.77,0,.18,1)',
+    willChange:'transform',
+  };
+
+  return (
+    <div style={{ position:'fixed', inset:0, zIndex:9000, pointerEvents:'all', overflow:'hidden' }}>
+      <div style={{ ...barBase, top:0, transform:`translateY(${topY})`,
+        background:`linear-gradient(180deg, #000 0%, #000 70%, ${tint} 100%)` }} />
+      <div style={{ ...barBase, bottom:0, transform:`translateY(${botY})`,
+        background:`linear-gradient(0deg, #000 0%, #000 70%, ${tint} 100%)` }} />
+      <div style={{
+        position:'absolute', left:0, right:0, top:'50%', height:1,
+        background:cfg.acc, boxShadow:`0 0 14px ${cfg.acc}, 0 0 4px ${cfg.acc}`,
+        opacity: seamVisible ? 1 : 0,
+        transform: seamVisible ? 'scaleX(1)' : 'scaleX(0.2)',
+        transformOrigin:'center',
+        transition:'opacity .12s ease, transform .18s cubic-bezier(.22,1,.36,1)',
+      }} />
+    </div>
+  );
 }
 
 /* ── Grain Overlay ──────────────────────────────────────────────────────────────────── */

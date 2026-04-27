@@ -70,13 +70,40 @@ html, body { overflow-x: hidden; font-family: 'Space Mono', monospace; }
 @keyframes spin  { from{transform:rotate(0deg)}    to{transform:rotate(360deg)}   }
 @keyframes spinr { from{transform:rotate(0deg)}    to{transform:rotate(-360deg)}  }
 
-/* ── Loading / iris ────────────────────────────────────────────────────── */
+/* ── Loading / curtain ─────────────────────────────────────────────────── */
 @keyframes lBarFill  { from{width:0} to{width:100%} }
 @keyframes lCharIn   { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
 @keyframes scrollPulse { 0%,100%{opacity:.45} 50%{opacity:.15} }
-@keyframes irisOut   { from{clip-path:circle(150% at 50% 50%)} to{clip-path:circle(0% at 50% 50%)} }
-@keyframes portalSpin  { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
-@keyframes portalPulse { 0%,100%{opacity:.7} 50%{opacity:1} }
+@keyframes filmFlash { 0%,100%{opacity:0} 50%{opacity:1} }
+
+/* ── World hero (full-bleed video/image) ───────────────────────────────── */
+.world-hero-full {
+  position:relative;
+  min-height:100vh;
+  width:100%;
+  overflow:hidden;
+}
+.world-hero-full > .world-hero-bg {
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover;
+  transform:translate3d(0,var(--hero-parallax,0px),0) scale(1.05);
+  will-change:transform;
+}
+.world-hero-full > .world-hero-vignette {
+  position:absolute; inset:0;
+  background:linear-gradient(180deg, rgba(0,0,0,0.25) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.78) 100%);
+  pointer-events:none;
+}
+
+/* ── World card hover video ────────────────────────────────────────────── */
+.world-state-card video {
+  position:absolute; inset:0; width:100%; height:100%;
+  object-fit:cover;
+  opacity:0;
+  transition:opacity .4s ease;
+  pointer-events:none;
+}
+.world-state-card.is-hover video { opacity:1; }
 
 /* ── Works vertical stack ─────────────────────────────────────────────── */
 .work-v { position:relative; height:clamp(260px,55vh,600px); overflow:hidden; cursor:pointer; border-bottom:1px solid rgba(255,255,255,0.06); }

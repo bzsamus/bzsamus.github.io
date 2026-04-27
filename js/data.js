@@ -128,6 +128,25 @@ const WORLD_GALLERIES = {
 /* ── Reel video ──────────────────────────────────────────────────────────── */
 const REEL_VIDEO = 'assets/video/reel.mp4';
 
+/* ── Per-world hero background videos (drop files into assets/video/world/) ─
+   Set to null when no bespoke clip exists yet — WorldStatePage falls back to
+   WORLD_ROUTE_META[world].heroImg. See ASSETS.md for naming + encoding. */
+const WORLD_VIDEO = {
+  bloom:   null, // assets/video/world/bloom.mp4
+  core:    null, // assets/video/world/core.mp4
+  reclaim: null, // assets/video/world/reclaim.mp4
+  beyond:  REEL_VIDEO, // temporary stand-in until assets/video/world/beyond.mp4 is added
+};
+
+/* ── Per-world card hover videos (Select a World cards on home) ────────────
+   Short ambient loops (3–6s, 720p, ≤2MB). Null = keep image+filter hover. */
+const WORLD_HOVER_VIDEO = {
+  bloom:   null, // assets/video/hover/bloom-hover.mp4
+  core:    null, // assets/video/hover/core-hover.mp4
+  reclaim: null, // assets/video/hover/reclaim-hover.mp4
+  beyond:  null, // assets/video/hover/beyond-hover.mp4
+};
+
 /* ── Tweaks defaults (used by edit-mode integration) ────────────────────── */
 const TWEAKS_DEFAULTS = /*EDITMODE-BEGIN*/{
   "name": "mr5am",
