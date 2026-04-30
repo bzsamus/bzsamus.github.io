@@ -92,6 +92,9 @@ function App() {
     if (!shouldAnimateRoute) {
       setRenderedRoute(currentRoute);
       setRouteTransitionClass('');
+      if (!pendingScrollRef.current) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      }
       return;
     }
 
@@ -101,6 +104,9 @@ function App() {
 
     const swapTimer = window.setTimeout(() => {
       setRenderedRoute(currentRoute);
+      if (!pendingScrollRef.current) {
+        window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      }
       setRouteTransitionClass('route-enter');
     }, halfMs);
 
@@ -116,10 +122,6 @@ function App() {
 
   const { name } = tweaks;
   const handleWorldSelect = (routeKey) => {
-    if (!MODE_KEYS.includes(routeKey)) return;
-    navigateToRoute(routeKey);
-  };
-  const handlePortalRoute = (routeKey) => {
     if (!MODE_KEYS.includes(routeKey)) return;
     navigateToRoute(routeKey);
   };
@@ -160,7 +162,7 @@ function App() {
       />
 
       <div style={{ position:'relative', zIndex:7 }}>
-        <Nav name={name} mode={mode} onPortal={handlePortalRoute} onAnchor={handleNavAnchor} isDark={isDark} setIsDark={setIsDark} />
+        <Nav name={name} mode={mode} onAnchor={handleNavAnchor} isDark={isDark} setIsDark={setIsDark} isHome={renderedRoute === HOME_ROUTE} />
         {renderedRoute === HOME_ROUTE && <Hero name={name} mode={mode} isDark={isDark} />}
       </div>
 

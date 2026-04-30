@@ -104,15 +104,31 @@ function LoadingScreen({ mode, isDark, onDone }) {
 }
 
 /* ── Nav ─────────────────────────────────────────────────────────────────────── */
-function Nav({ name, mode, onPortal, onAnchor, isDark, setIsDark }) {
+function Nav({ name, mode, onAnchor, isDark, setIsDark, isHome }) {
   const cfg = MODES[mode];
   const [sc, setSc] = useState(false);
-  const [hovOrb, setHovOrb] = useState(null);
+  const [activeSection, setActiveSection] = useState(null);
   useEffect(() => {
     const fn = () => setSc(window.scrollY > 50);
     window.addEventListener('scroll', fn);
     return () => window.removeEventListener('scroll', fn);
   }, []);
+
+  useEffect(() => {
+    if (!isHome) { setActiveSection(null); return; }
+    const ids = ['about','contact'];
+    const els = ids.map(id => document.getElementById(id)).filter(Boolean);
+    if (els.length === 0) return;
+    const observer = new IntersectionObserver((entries) => {
+      const visible = entries.filter(e => e.isIntersecting);
+      if (visible.length === 0) { setActiveSection(null); return; }
+      // Pick the one closest to the top of the viewport (smallest top offset).
+      visible.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      setActiveSection(visible[0].target.id);
+    }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+    els.forEach(el => observer.observe(el));
+    return () => observer.disconnect();
+  }, [isHome]);
 
   const navBg = sc ? (isDark ? `${cfg.darkBg}f0` : `${cfg.lightBg}f0`) : 'transparent';
   const textFade = isDark ? 'rgba(255,255,255,0.25)' : 'rgba(0,0,0,0.3)';
@@ -129,56 +145,31 @@ function Nav({ name, mode, onPortal, onAnchor, isDark, setIsDark }) {
         {name}<span style={{ color:textFade }}> / {new Date().getFullYear()}</span>
       </span>
 
-      <div style={{ display:'flex', gap:10, alignItems:'center' }}>
-        {Object.entries(MODES).map(([k, m]) => {
-          const isActive = mode === k;
-          const isHov = hovOrb === k;
-          return (
-            <div key={k} style={{ position:'relative', display:'flex', alignItems:'center' }}>
-              <button
-                onClick={() => k !== mode && onPortal(k)}
-                onMouseEnter={() => setHovOrb(k)}
-                onMouseLeave={() => setHovOrb(null)}
-                title={m.label}
-                style={{
-                  width:isActive?30:22, height:isActive?30:22, borderRadius:'50%',
-                  cursor:k===mode?'default':'pointer',
-                  border:`2px solid ${isActive?m.acc:(isHov?m.acc+'88':(isDark?'rgba(255,255,255,0.12)':'rgba(0,0,0,0.14)'))}`,
-                  background:isActive?m.acc:(isHov?`${m.acc}28`:`${m.acc}12`),
-                  boxShadow:isActive?`0 0 14px ${m.acc}88, 0 0 5px ${m.acc}`:(isHov?`0 0 8px ${m.acc}44`:'none'),
-                  transition:'all .25s cubic-bezier(.22,1,.36,1)', padding:0,
-                }}
-              />
-              {(isHov || isActive) && (
-                <span style={{
-                  position:'absolute', top:'calc(100% + 7px)', left:'50%', transform:'translateX(-50%)',
-                  fontFamily:'Space Mono', fontSize:7, letterSpacing:'.12em', color:m.acc,
-                  whiteSpace:'nowrap', pointerEvents:'none',
-                }}>{m.label}</span>
-              )}
-            </div>
-          );
-        })}
-        <button onClick={() => setIsDark(d => !d)} title={isDark?'Day mode':'Night mode'} style={{
-          marginLeft:4, width:28, height:28, borderRadius:'50%', cursor:'pointer',
-          border:`1px solid ${cfg.acc}44`, background:isDark?cfg.acc+'18':cfg.acc+'22',
-          color:cfg.acc, fontSize:13, display:'flex', alignItems:'center', justifyContent:'center', transition:'all .25s',
-        }}>
+      <div style={{ display:'flex', gap:18, alignItems:'center' }}>
+        <button onClick={() => setIsDark(d => !d)} title={isDark?'Day mode':'Night mode'}
+          aria-label={isDark?'Switch to day mode':'Switch to night mode'}
+          aria-pressed={!isDark}
+          style={{
+            width:28, height:28, borderRadius:'50%', cursor:'pointer',
+            border:`1px solid ${cfg.acc}44`, background:isDark?cfg.acc+'18':cfg.acc+'22',
+            color:cfg.acc, fontSize:13, display:'flex', alignItems:'center', justifyContent:'center', transition:'all .25s',
+          }}>
           {isDark ? '☀' : '☾'}
         </button>
-      </div>
-
-      <div style={{ display:'flex', gap:28 }}>
-        {['about','contact'].map(s => (
-          <a key={s} href={`#${s}`} style={{
-            fontFamily:'Space Mono', fontSize:9, letterSpacing:'.14em', textTransform:'uppercase',
-            color:linkColor, textDecoration:'none', transition:'color .2s',
-          }}
-          onClick={e => { if (typeof onAnchor === 'function') { e.preventDefault(); onAnchor(s); } }}
-          onMouseEnter={e => e.target.style.color = cfg.acc}
-          onMouseLeave={e => e.target.style.color = linkColor}
-          >{s}</a>
-        ))}
+        {['about','contact'].map(s => {
+          const isActive = activeSection === s;
+          const baseColor = isActive ? cfg.acc : linkColor;
+          return (
+            <a key={s} href={`#${s}`} style={{
+              fontFamily:'Space Mono', fontSize:9, letterSpacing:'.14em', textTransform:'uppercase',
+              color:baseColor, textDecoration:'none', transition:'color .2s',
+            }}
+            onClick={e => { if (typeof onAnchor === 'function') { e.preventDefault(); onAnchor(s); } }}
+            onMouseEnter={e => e.target.style.color = cfg.acc}
+            onMouseLeave={e => e.target.style.color = baseColor}
+            >{s}</a>
+          );
+        })}
       </div>
     </nav>
   );
