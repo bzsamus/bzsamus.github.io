@@ -161,10 +161,13 @@ function App() {
         onComplete={() => setPortalTarget(null)}
       />
 
-      <div style={{ position:'relative', zIndex:7 }}>
-        <Nav name={name} mode={mode} onAnchor={handleNavAnchor} isDark={isDark} setIsDark={setIsDark} isHome={renderedRoute === HOME_ROUTE} />
-        {renderedRoute === HOME_ROUTE && <Hero name={name} mode={mode} isDark={isDark} />}
-      </div>
+      <Nav name={name} mode={mode} onAnchor={handleNavAnchor} isDark={isDark} setIsDark={setIsDark} isHome={renderedRoute === HOME_ROUTE} />
+
+      {renderedRoute === HOME_ROUTE && (
+        <div style={{ position:'relative', zIndex:7 }}>
+          <Hero name={name} mode={mode} isDark={isDark} />
+        </div>
+      )}
 
       <ContentBG mode={mode} isDark={isDark} noRamp={renderedRoute !== HOME_ROUTE}>
         <div className={`route-transition-shell ${routeTransitionClass}`.trim()}>
