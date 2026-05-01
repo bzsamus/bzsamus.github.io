@@ -18,7 +18,7 @@ function ProjectOverlay({ work, cfg, isDark, onClose }) {
   const fg = isDark ? '#f0ece4' : '#111';
   const sub = isDark ? 'rgba(255,255,255,0.38)' : 'rgba(0,0,0,0.5)';
   const hasMedia = work.video || work.img;
-  return (
+  return ReactDOM.createPortal(
     <div style={{ position:'fixed', inset:0, zIndex:800, pointerEvents: open ? 'all' : 'none' }}>
       <div onClick={close} style={{ position:'absolute', inset:0, background:'rgba(0,0,0,0.72)', backdropFilter:'blur(5px)', opacity:open?1:0, transition:'opacity .4s' }} />
       <div className="proj-ov-panel" style={{
@@ -59,7 +59,7 @@ function ProjectOverlay({ work, cfg, isDark, onClose }) {
         </div>
       </div>
     </div>
-  );
+  , document.body);
 }
 
 /* ── Work Card V ──────────────────────────────────────────────────────────────────────── */
