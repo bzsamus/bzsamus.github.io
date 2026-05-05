@@ -1,0 +1,10 @@
+.git
+.gitignore
+.dockerignore
+Dockerfile
+README.md
+ASSETS.md
+assets/
+scripts/
+*.md
+.DS_Store

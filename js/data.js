@@ -18,16 +18,20 @@ const INITIAL_MODE = MODE_KEYS[Math.floor(Math.random() * MODE_KEYS.length)];
 const HOME_ROUTE = 'home';
 const ROUTE_KEYS = [HOME_ROUTE, ...MODE_KEYS];
 
-/* ── Hero background images (assets/image/hero/) ────────────────────────── */
+/* ── Asset host (Cloudflare R2 via custom hostname) ──────────────────────── */
+const ASSET_BASE = 'https://assets.mr5am.com/';
+const asset = (p) => ASSET_BASE + p;
+
+/* ── Hero background images (R2: image/hero/) ────────────────────────────── */
 const ART_IMGS = [
-  'assets/image/hero/mr5am_torii_flowers_sun_rays_sun_beams_in_the_style_of_multi-_2fb4ccc6-0778-433b-80f7-a274c8c3e6ae_2.png',
-  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_3eaab53c-c771-4d6c-8333-e797aa8bc109_2.png',
-  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_9c58bc0e-17e6-4210-86e1-5b6eaccb3a08_2.png',
-  'assets/image/hero/mr5am_Dual_scenery_above_and_below_the_water_surface._Above_t_ed2ed109-eb7d-479b-8f01-c558e15189da_2.png',
-  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_347cd1e8-cbeb-4074-9730-834b0a65c0ec_3.png',
-  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_9c58bc0e-17e6-4210-86e1-5b6eaccb3a08_3.png',
-  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_ab2b930c-028a-4c8c-ac70-318cf341d5fc_1.png',
-  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_a40f8b1b-9f5f-44f9-a0b2-554d9e817cfd_0.png',
+  asset('image/hero/mr5am_torii_flowers_sun_rays_sun_beams_in_the_style_of_multi-_2fb4ccc6-0778-433b-80f7-a274c8c3e6ae_2.png'),
+  asset('image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_3eaab53c-c771-4d6c-8333-e797aa8bc109_2.png'),
+  asset('image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_9c58bc0e-17e6-4210-86e1-5b6eaccb3a08_2.png'),
+  asset('image/hero/mr5am_Dual_scenery_above_and_below_the_water_surface._Above_t_ed2ed109-eb7d-479b-8f01-c558e15189da_2.png'),
+  asset('image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_347cd1e8-cbeb-4074-9730-834b0a65c0ec_3.png'),
+  asset('image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_9c58bc0e-17e6-4210-86e1-5b6eaccb3a08_3.png'),
+  asset('image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_ab2b930c-028a-4c8c-ac70-318cf341d5fc_1.png'),
+  asset('image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_a40f8b1b-9f5f-44f9-a0b2-554d9e817cfd_0.png'),
 ];
 ART_IMGS.forEach(s => { const i = new Image(); i.src = s; });
 
@@ -126,25 +130,25 @@ const WORLD_GALLERIES = {
 };
 
 /* ── Reel video ──────────────────────────────────────────────────────────── */
-const REEL_VIDEO = 'assets/video/reel.mp4';
+const REEL_VIDEO = asset('video/reel.mp4');
 
-/* ── Per-world hero background videos (drop files into assets/video/world/) ─
+/* ── Per-world hero background videos (R2: video/world/) ──────────────────
    Set to null when no bespoke clip exists yet — WorldStatePage falls back to
    WORLD_ROUTE_META[world].heroImg. See ASSETS.md for naming + encoding. */
 const WORLD_VIDEO = {
-  bloom:   null, // assets/video/world/bloom.mp4
-  core:    null, // assets/video/world/core.mp4
-  reclaim: null, // assets/video/world/reclaim.mp4
-  beyond:  REEL_VIDEO, // temporary stand-in until assets/video/world/beyond.mp4 is added
+  bloom:   null, // asset('video/world/bloom.mp4')
+  core:    null, // asset('video/world/core.mp4')
+  reclaim: null, // asset('video/world/reclaim.mp4')
+  beyond:  REEL_VIDEO, // temporary stand-in until video/world/beyond.mp4 is added
 };
 
 /* ── Per-world card hover videos (Select a World cards on home) ────────────
    Short ambient loops (3–6s, 720p, ≤2MB). Null = keep image+filter hover. */
 const WORLD_HOVER_VIDEO = {
-  bloom:   null, // assets/video/hover/bloom-hover.mp4
-  core:    null, // assets/video/hover/core-hover.mp4
-  reclaim: null, // assets/video/hover/reclaim-hover.mp4
-  beyond:  null, // assets/video/hover/beyond-hover.mp4
+  bloom:   null, // asset('video/hover/bloom-hover.mp4')
+  core:    null, // asset('video/hover/core-hover.mp4')
+  reclaim: null, // asset('video/hover/reclaim-hover.mp4')
+  beyond:  null, // asset('video/hover/beyond-hover.mp4')
 };
 
 /* ── Tweaks defaults (used by edit-mode integration) ────────────────────── */
