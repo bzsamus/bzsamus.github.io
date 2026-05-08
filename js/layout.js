@@ -104,7 +104,7 @@ function LoadingScreen({ mode, isDark, onDone }) {
 }
 
 /* ── Nav ─────────────────────────────────────────────────────────────────────── */
-function Nav({ name, mode, onAnchor, isDark, setIsDark, isHome }) {
+function Nav({ name, mode, onAnchor, onHome, isDark, setIsDark, isHome }) {
   const cfg = MODES[mode];
   const [sc, setSc] = useState(false);
   const [activeSection, setActiveSection] = useState(null);
@@ -141,11 +141,42 @@ function Nav({ name, mode, onAnchor, isDark, setIsDark, isHome }) {
       background:navBg, backdropFilter:sc?'blur(14px)':'none',
       borderBottom:`1px solid ${sc?cfg.acc+'28':'transparent'}`, transition:'all .4s',
     }}>
-      <span style={{ fontFamily:'Space Mono', fontSize:11, color:cfg.acc, letterSpacing:'.14em' }}>
+      <a
+        href="/"
+        aria-label="Return home"
+        onClick={e => {
+          if (typeof onHome === 'function') {
+            e.preventDefault();
+            onHome();
+          }
+        }}
+        style={{ fontFamily:'Space Mono', fontSize:11, color:cfg.acc, letterSpacing:'.14em', textDecoration:'none' }}
+      >
         {name}<span style={{ color:textFade }}> / {new Date().getFullYear()}</span>
-      </span>
+      </a>
 
       <div style={{ display:'flex', gap:18, alignItems:'center' }}>
+        {!isHome && (
+          <a
+            href="/"
+            aria-label="Return home"
+            onClick={e => {
+              if (typeof onHome === 'function') {
+                e.preventDefault();
+                onHome();
+              }
+            }}
+            style={{
+              fontFamily:'Space Mono', fontSize:9, letterSpacing:'.14em', textTransform:'uppercase',
+              color:cfg.acc, textDecoration:'none', border:`1px solid ${cfg.acc}44`,
+              padding:'7px 12px', background:`${cfg.acc}10`, transition:'border-color .2s, background .2s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = cfg.acc; e.currentTarget.style.background = `${cfg.acc}20`; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = `${cfg.acc}44`; e.currentTarget.style.background = `${cfg.acc}10`; }}
+          >
+            Home
+          </a>
+        )}
         <button onClick={() => setIsDark(d => !d)} title={isDark?'Day mode':'Night mode'}
           aria-label={isDark?'Switch to day mode':'Switch to night mode'}
           aria-pressed={!isDark}
@@ -180,7 +211,7 @@ function Hero({ name, mode, isDark }) {
   const cfg = MODES[mode];
   const [vis, setVis] = useState(false);
   const [discIdx, setDiscIdx] = useState(0);
-  const discs = ['painterly worlds', 'generative art', 'anime films', 'original music', 'indie games', 'web systems'];
+  const discs = ['painted atmospheres', 'generative studies', 'animated fragments', 'original sound', 'playable sketches', 'web instruments'];
   useEffect(() => { setTimeout(() => setVis(true), 150); }, []);
   useEffect(() => {
     const iv = setInterval(() => setDiscIdx(i => (i+1) % discs.length), 2600);
@@ -199,7 +230,7 @@ function Hero({ name, mode, isDark }) {
   const scrollColor = 'rgba(255,255,255,0.4)';
   const mq = isDark ? 'rgba(255,255,255,0.14)' : 'rgba(255,255,255,0.22)';
 
-  const heroHeading = 'Cinematic Worldbuilding Through Visual States';
+  const heroHeading = 'Worlds Painted in Light, Code, and Time';
 
   return (
     <section style={{ minHeight:'100vh', display:'flex', flexDirection:'column', justifyContent:'flex-end', padding:'0 32px 72px', position:'relative', overflow:'hidden' }}>
@@ -217,7 +248,7 @@ function Hero({ name, mode, isDark }) {
 
       <div style={{ position:'relative', zIndex:7 }}>
         <div style={{ fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.22em', textTransform:'uppercase', marginBottom:16, ...tr(.2) }}>
-          ✦ PORTFOLIO · {new Date().getFullYear()} ✦
+          ✦ LIVING ARCHIVE · {new Date().getFullYear()} ✦
         </div>
         <h1 style={{
           ...tr(.1),
@@ -249,7 +280,7 @@ function Hero({ name, mode, isDark }) {
         <div style={{ display:'flex', whiteSpace:'nowrap', animation:'mq 22s linear infinite', width:'max-content' }}>
           {[...Array(10)].map((_,i) => (
             <span key={i} style={{ fontFamily:'Space Mono', fontSize:10, color:mq, letterSpacing:'.2em', textTransform:'uppercase', padding:'0 28px' }}>
-              art ✦ code ✦ music ✦ anime ✦ motion ✦ games ✦ systems ✦
+              image ✦ code ✦ sound ✦ motion ✦ play ✦ atmosphere ✦ systems ✦
             </span>
           ))}
         </div>

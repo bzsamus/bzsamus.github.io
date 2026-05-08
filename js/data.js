@@ -19,40 +19,56 @@ const HOME_ROUTE = 'home';
 const ROUTE_KEYS = [HOME_ROUTE, ...MODE_KEYS];
 
 /* ── Hero background images (assets/image/hero/) ────────────────────────── */
-const ART_IMGS = [
-  'assets/image/hero/mr5am_torii_flowers_sun_rays_sun_beams_in_the_style_of_multi-_2fb4ccc6-0778-433b-80f7-a274c8c3e6ae_2.png',
-  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_3eaab53c-c771-4d6c-8333-e797aa8bc109_2.png',
-  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_9c58bc0e-17e6-4210-86e1-5b6eaccb3a08_2.png',
-  'assets/image/hero/mr5am_Dual_scenery_above_and_below_the_water_surface._Above_t_ed2ed109-eb7d-479b-8f01-c558e15189da_2.png',
-  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_347cd1e8-cbeb-4074-9730-834b0a65c0ec_3.png',
-  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_9c58bc0e-17e6-4210-86e1-5b6eaccb3a08_3.png',
-  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_ab2b930c-028a-4c8c-ac70-318cf341d5fc_1.png',
-  'assets/image/hero/mr5am_A_painterly_anime_illustration_style_reminiscent_of_Stu_a40f8b1b-9f5f-44f9-a0b2-554d9e817cfd_0.png',
-];
+const WORLD_ART = {
+  bloom: [
+    'assets/image/hero/bloom_A_painterly_anime_illustration_style_reminiscent_of_Stu_294dec26-a406-457f-afee-fa5eb74ce5b8_3.webp',
+    'assets/image/hero/bloom_A_painterly_anime_illustration_style_reminiscent_of_Stu_7f0c1202-3d20-42ab-a8ef-db3e3aebaf9a_3.webp',
+    'assets/image/hero/bloom_A_painterly_anime_illustration_style_reminiscent_of_Stu_a3487f1a-e707-4e1b-9ac4-3d6b75f03bac_3.webp',
+    'assets/image/hero/bloom_Dual_scenery_above_and_below_the_water_surface._Above_t_ed2ed109-eb7d-479b-8f01-c558e15189da_3.webp',
+  ],
+  core: [
+    'assets/image/hero/core_A_painterly_anime_illustration_style_reminiscent_of_Stu_16409917-dde5-4612-989e-64502a1b79d6_3.webp',
+    'assets/image/hero/core_A_painterly_anime_illustration_style_reminiscent_of_Stu_924fcaa7-bb9d-413a-a5dc-080dbde8aaed_2.webp',
+    'assets/image/hero/core_A_painterly_anime_illustration_style_reminiscent_of_Stu_9c58bc0e-17e6-4210-86e1-5b6eaccb3a08_1.webp',
+    'assets/image/hero/core_dreamlike_mirrored_city_above_a_luminous_ocean_floating_fe7a87c4-e223-4885-aae4-9b6ad358a4d0_2.webp',
+  ],
+  reclaim: [
+    'assets/image/hero/reclaim_A_painterly_anime_illustration_style_reminiscent_of_Stu_36584efa-2fa5-4252-ad0e-7a8d837b808d_0.webp',
+    'assets/image/hero/reclaim_A_painterly_anime_illustration_style_reminiscent_of_Stu_36584efa-2fa5-4252-ad0e-7a8d837b808d_3.webp',
+    'assets/image/hero/reclaim_A_painterly_anime_illustration_style_reminiscent_of_Stu_d2d2a9ca-f538-4e57-a36f-67ca8b331cdd_0.webp',
+    'assets/image/hero/reclaim_a_wild_techo_landscape_with_mechs_and_cyberpunk_live_in_df105a3c-fea5-47da-88c2-bb27c9b5c461_2.webp',
+  ],
+  beyond: [
+    'assets/image/hero/beyond_A_painterly_anime_illustration_style_reminiscent_of_Stu_0009dea5-dbcf-4358-80cf-b091b6c7f4e2_3.webp',
+    'assets/image/hero/beyond_A_painterly_anime_illustration_style_reminiscent_of_Stu_212f4684-9216-4237-a233-3cfb78b9625b_2.webp',
+    'assets/image/hero/beyond_A_painterly_anime_illustration_style_reminiscent_of_Stu_53ffea80-63ea-4408-9c62-7430c1a86ea6_3.webp',
+    'assets/image/hero/beyond_A_painterly_anime_illustration_style_reminiscent_of_Stu_82237982-cf72-4296-88dd-704bd50f6c92_0.webp',
+  ],
+};
+const ART_IMGS = WORLD_ORDER.flatMap(worldKey => WORLD_ART[worldKey]);
 ART_IMGS.forEach(s => { const i = new Image(); i.src = s; });
 
 /* ── Slideshow index sets (ArtworkSlideshowBG dependency) ──────────────── */
-const MODE_ART = {
-  bloom: [0, 4, 5, 7],
-  core: [1, 2, 3, 6],
-  reclaim: [2, 5, 4, 3],
-  beyond: [7, 6, 3, 1],
-};
+const MODE_ART = WORLD_ORDER.reduce((acc, worldKey, worldIdx) => {
+  const baseIdx = worldIdx * WORLD_ART[worldKey].length;
+  acc[worldKey] = WORLD_ART[worldKey].map((_, imgIdx) => baseIdx + imgIdx);
+  return acc;
+}, {});
 
 /* ── Homepage world route metadata (single source of truth for labels) ─── */
 const WORLD_ROUTE_META = {
-  bloom:   { key:'bloom',   label:'Bloom',   heroImg:ART_IMGS[0], description:'Lush growth and warm sunlight.' },
-  core:    { key:'core',    label:'Core',    heroImg:ART_IMGS[1], description:'Mechanical density and electric structure.' },
-  reclaim: { key:'reclaim', label:'Reclaim', heroImg:ART_IMGS[2], description:'Nature returning through the ruins.' },
-  beyond:  { key:'beyond',  label:'Beyond',  heroImg:ART_IMGS[7], description:'Deep space, silence, and cosmic scale.' },
+  bloom:   { key:'bloom',   label:'Bloom',   heroImg:WORLD_ART.bloom[0], description:'Sunlit growth, quiet gardens, and weather held in color.' },
+  core:    { key:'core',    label:'Core',    heroImg:WORLD_ART.core[0], description:'Dense machines, electric cities, and architecture under pressure.' },
+  reclaim: { key:'reclaim', label:'Reclaim', heroImg:WORLD_ART.reclaim[0], description:'Ruins softened by rain, roots, and the patience of living green.' },
+  beyond:  { key:'beyond',  label:'Beyond',  heroImg:WORLD_ART.beyond[0], description:'Orbit, silence, and the strange scale of distant light.' },
 };
 
 /* ── World page descriptions (single source of truth for body copy) ────── */
 const WORLD_DESCRIPTIONS = {
-  bloom: 'Lush growth and warm sunlight.',
-  core: 'Mechanical density and electric structure.',
-  reclaim: 'Nature returning through the ruins.',
-  beyond: 'Deep space, silence, and cosmic scale.',
+  bloom: 'Bloom is a study in gentleness: sunlight passing through leaves, gardens widening after rain, and color treated as a living material.',
+  core: 'Core follows the pulse of built worlds: metal, circuitry, pressure, and the uneasy beauty of systems that keep moving.',
+  reclaim: 'Reclaim imagines the slow return of nature, where concrete becomes soil, machinery becomes shelter, and time edits everything.',
+  beyond: 'Beyond looks outward toward orbit, distance, and silence, building scenes where scale becomes emotion and light feels almost ancient.',
 };
 
 /* ── World config ────────────────────────────────────────────────────────── */
@@ -68,74 +84,44 @@ const tx = (dark, light, isDark) => isDark ? dark : light;
 
 /* ── Works data ──────────────────────────────────────────────────────────── */
 const WORKS_RAW = [
-  { id:1, title:'Torii Garden',        type:'Generative Art',   year:'2025', tag:'ART',   jp:'鳥居の庭', img:ART_IMGS[0], video:null, worlds:['bloom','reclaim'] },
-  { id:2, title:'Below & Above',       type:'Generative Art',   year:'2025', tag:'ART',   jp:'水面',     img:ART_IMGS[3], video:null, worlds:['reclaim','beyond'] },
-  { id:3, title:'Threshold',           type:'Anime Short',      year:'2024', tag:'VIDEO', jp:'閾値',     img:ART_IMGS[4], video:null, worlds:['bloom','reclaim'] },
-  { id:4, title:'Azure City',          type:'Generative Art',   year:'2024', tag:'ART',   jp:'蒼天',     img:ART_IMGS[1], video:null, worlds:['core','beyond']   },
-  { id:5, title:'Moving Architecture', type:'Generative Art',   year:'2024', tag:'ART',   jp:'動く城',   img:ART_IMGS[2], video:null, worlds:['core','reclaim']  },
-  { id:6, title:'Reclaimed',           type:'Generative Art',   year:'2023', tag:'ART',   jp:'自然回帰', img:ART_IMGS[5], video:null, worlds:['reclaim']         },
+  { id:1, title:'Torii Garden',        type:'Generative Art',   year:'2025', tag:'ART',   jp:'鳥居の庭', img:WORLD_ART.bloom[0],   video:null, worlds:['bloom','reclaim'] },
+  { id:2, title:'Below & Above',       type:'Generative Art',   year:'2025', tag:'ART',   jp:'水面',     img:WORLD_ART.bloom[3],   video:null, worlds:['reclaim','beyond'] },
+  { id:3, title:'Threshold',           type:'Anime Short',      year:'2024', tag:'VIDEO', jp:'閾値',     img:WORLD_ART.bloom[1],   video:null, worlds:['bloom','reclaim'] },
+  { id:4, title:'Azure City',          type:'Generative Art',   year:'2024', tag:'ART',   jp:'蒼天',     img:WORLD_ART.core[0],    video:null, worlds:['core','beyond']   },
+  { id:5, title:'Moving Architecture', type:'Generative Art',   year:'2024', tag:'ART',   jp:'動く城',   img:WORLD_ART.core[1],    video:null, worlds:['core','reclaim']  },
+  { id:6, title:'Reclaimed',           type:'Generative Art',   year:'2023', tag:'ART',   jp:'自然回帰', img:WORLD_ART.reclaim[0], video:null, worlds:['reclaim']         },
   { id:7, title:'Pulse Engine',        type:'Generative Music', year:'2023', tag:'MUSIC', jp:'脈動',     img:null,        video:null, worlds:['core']            },
-  { id:8, title:'From Orbit',          type:'Generative Art',   year:'2025', tag:'ART',   jp:'軌道から', img:ART_IMGS[6], video:null, worlds:['beyond']          },
-  { id:9, title:'E.V.A.',              type:'Generative Art',   year:'2025', tag:'ART',   jp:'船外活動', img:ART_IMGS[7], video:null, worlds:['beyond']          },
+  { id:8, title:'From Orbit',          type:'Generative Art',   year:'2025', tag:'ART',   jp:'軌道から', img:WORLD_ART.beyond[1],  video:null, worlds:['beyond']          },
+  { id:9, title:'E.V.A.',              type:'Generative Art',   year:'2025', tag:'ART',   jp:'船外活動', img:WORLD_ART.beyond[0],  video:null, worlds:['beyond']          },
 ];
 const WORKS = [...WORKS_RAW].sort((a,b) =>
   Math.sin(VISIT_SEED*a.id*9301+49297) - Math.sin(VISIT_SEED*b.id*9301+49297)
 );
 
-const WORK_IMAGES_BY_WORLD = MODE_KEYS.reduce((acc, worldKey) => {
-  acc[worldKey] = WORKS_RAW
-    .filter((work) => work.img && work.worlds.includes(worldKey))
-    .map((work) => work.img)
-    .filter((img, idx, arr) => arr.indexOf(img) === idx);
-  return acc;
-}, {});
-
-/* ── Curated world galleries (derived from assets + works/world mappings) ─ */
+/* ── Curated world galleries ────────────────────────────────────────────── */
 const WORLD_GALLERIES = {
   // soft lighting / countryside / flowers / calm city
-  bloom: [
-    ART_IMGS[0],
-    ART_IMGS[4],
-    ART_IMGS[5],
-    WORK_IMAGES_BY_WORLD.bloom[0],
-  ].filter(Boolean),
+  bloom: WORLD_ART.bloom,
 
   // industrial / dense / cyberpunk / mechanical
-  core: [
-    ART_IMGS[1],
-    ART_IMGS[2],
-    ART_IMGS[3],
-    ART_IMGS[6],
-  ].filter(Boolean),
+  core: WORLD_ART.core,
 
   // overgrown / vines / nature + structure
-  reclaim: [
-    ART_IMGS[2],
-    ART_IMGS[5],
-    ART_IMGS[4],
-    WORK_IMAGES_BY_WORLD.reclaim.find((img) => img === ART_IMGS[3]) || ART_IMGS[3],
-  ].filter(Boolean),
+  reclaim: WORLD_ART.reclaim,
 
   // space / sky / massive scale / surreal
-  beyond: [
-    ART_IMGS[7],
-    ART_IMGS[6],
-    ART_IMGS[3],
-    WORK_IMAGES_BY_WORLD.beyond.find((img) => img === ART_IMGS[1]) || ART_IMGS[1],
-  ].filter(Boolean),
+  beyond: WORLD_ART.beyond,
 };
 
 /* ── Reel video ──────────────────────────────────────────────────────────── */
-const REEL_VIDEO = 'assets/video/reel.mp4';
+const REEL_VIDEO = null;
 
-/* ── Per-world hero background videos (drop files into assets/video/world/) ─
-   Set to null when no bespoke clip exists yet — WorldStatePage falls back to
-   WORLD_ROUTE_META[world].heroImg. See ASSETS.md for naming + encoding. */
+/* ── Per-world hero background videos ───────────────────────────────────── */
 const WORLD_VIDEO = {
-  bloom:   null, // assets/video/world/bloom.mp4
-  core:    null, // assets/video/world/core.mp4
-  reclaim: null, // assets/video/world/reclaim.mp4
-  beyond:  REEL_VIDEO, // temporary stand-in until assets/video/world/beyond.mp4 is added
+  bloom:   'assets/video/world/bloom.webm',
+  core:    'assets/video/world/core.webm',
+  reclaim: 'assets/video/world/reclaim.webm',
+  beyond:  'assets/video/world/beyond.webm',
 };
 
 /* ── Per-world card hover videos (Select a World cards on home) ────────────
@@ -150,6 +136,6 @@ const WORLD_HOVER_VIDEO = {
 /* ── Tweaks defaults (used by edit-mode integration) ────────────────────── */
 const TWEAKS_DEFAULTS = /*EDITMODE-BEGIN*/{
   "name": "mr5am",
-  "tagline": "generative art · anime · music · games",
+  "tagline": "visual worlds · motion · sound · systems",
   "mode": "bloom"
 }/*EDITMODE-END*/;

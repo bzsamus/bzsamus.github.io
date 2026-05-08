@@ -54,7 +54,7 @@ function ProjectOverlay({ work, cfg, isDark, onClose }) {
             <a href="#" style={{ fontFamily:'Space Mono', fontSize:9, letterSpacing:'.14em', color:cfg.acc, border:`1px solid ${cfg.acc}`, padding:'10px 26px', textDecoration:'none', transition:'all .2s' }}
               onMouseEnter={e=>{e.currentTarget.style.background=cfg.acc;e.currentTarget.style.color='#000';}}
               onMouseLeave={e=>{e.currentTarget.style.background='transparent';e.currentTarget.style.color=cfg.acc;}}
-            >VIEW WORK ↗</a>
+            >VIEW STUDY ↗</a>
           </div>
         </div>
       </div>
@@ -107,7 +107,7 @@ function WorkCardV({ work, cfg, isDark, index, onOpen }) {
         <div style={{ fontFamily:'Space Mono', fontSize:10, color:'rgba(255,255,255,0.45)', marginBottom:14 }}>{work.type}</div>
         <div style={{ display:'flex', alignItems:'center', gap:10, opacity:hov?1:0, transform:hov?'translateX(0)':'translateX(-14px)', transition:'all .4s cubic-bezier(.22,1,.36,1)' }}>
           <div style={{ width:28, height:1, background:cfg.acc }} />
-          <span style={{ fontFamily:'Space Mono', fontSize:9, color:cfg.acc, letterSpacing:'.16em' }}>VIEW PROJECT</span>
+          <span style={{ fontFamily:'Space Mono', fontSize:9, color:cfg.acc, letterSpacing:'.16em' }}>VIEW STUDY</span>
           <span style={{ color:cfg.acc, fontSize:13 }}>→</span>
         </div>
       </div>
@@ -148,7 +148,7 @@ function CategoryTile({ category, works, cfg, isDark, onSelect }) {
         <div style={{ display:'flex', flexDirection:'column', alignItems:'flex-end', gap:10 }}>
           {works.length > 0 ? (
             <div style={{ fontFamily:'Space Mono', fontSize:10, color:'rgba(255,255,255,.5)', letterSpacing:'.12em' }}>
-              {works.length} {works.length === 1 ? 'WORK' : 'WORKS'}
+              {works.length} {works.length === 1 ? 'STUDY' : 'STUDIES'}
             </div>
           ) : (
             <div style={{ fontFamily:'Space Mono', fontSize:8, color:cfg.acc, letterSpacing:'.18em', border:`1px solid ${cfg.acc}55`, padding:'4px 12px' }}>SOON</div>
@@ -180,16 +180,16 @@ function CategoryDetail({ category, works, cfg, isDark, onBack, onOpen }) {
           onMouseEnter={e => e.currentTarget.style.borderColor = cfg.acc}
           onMouseLeave={e => e.currentTarget.style.borderColor = `${cfg.acc}44`}
         >
-          <span>←</span><span>ALL CATEGORIES</span>
+          <span>←</span><span>ALL MEDIUMS</span>
         </button>
-        <div style={{ fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.2em', marginBottom:14 }}>002 / WORKS —</div>
+        <div style={{ fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.2em', marginBottom:14 }}>002 / SELECTED STUDIES —</div>
         <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
           <h2 style={{ fontFamily:'Bebas Neue', fontSize:'clamp(52px,7vw,108px)', lineHeight:.92, letterSpacing:'.02em', color:heading }}>
             {category}<br />
             <span style={{ WebkitTextStroke:`1px ${cfg.acc}`, color:'transparent' }}>{CAT_JP[category]}</span>
           </h2>
           <div style={{ textAlign:'right' }}>
-            <div style={{ fontFamily:'Space Mono', fontSize:9, color:sub, letterSpacing:'.12em' }}>{works.length} {works.length === 1 ? 'WORK' : 'WORKS'}</div>
+            <div style={{ fontFamily:'Space Mono', fontSize:9, color:sub, letterSpacing:'.12em' }}>{works.length} {works.length === 1 ? 'STUDY' : 'STUDIES'}</div>
             <div style={{ fontFamily:'Space Mono', fontSize:9, color:sub, letterSpacing:'.1em', marginTop:4 }}>{CAT_DESC[category]}</div>
           </div>
         </div>
@@ -197,7 +197,7 @@ function CategoryDetail({ category, works, cfg, isDark, onBack, onOpen }) {
       {works.length === 0 ? (
         <div style={{ margin:'0 32px 60px', padding:'80px 32px', textAlign:'center', border:`1px solid ${cfg.acc}22`, display:'flex', flexDirection:'column', alignItems:'center', gap:16 }}>
           <div style={{ fontFamily:'Bebas Neue', fontSize:52, color:cfg.acc, opacity:.3 }}>IN PROGRESS</div>
-          <div style={{ fontFamily:'Space Mono', fontSize:9, color:sub, letterSpacing:'.18em' }}>WORKS COMING SOON</div>
+          <div style={{ fontFamily:'Space Mono', fontSize:9, color:sub, letterSpacing:'.18em' }}>STUDIES IN PROGRESS</div>
         </div>
       ) : (
         works.map((work, idx) => (
@@ -240,15 +240,15 @@ function WorksSection({ mode, isDark }) {
             </div>
             <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', flexWrap:'wrap', gap:16 }}>
               <h2 style={{ fontFamily:'Bebas Neue', fontSize:'clamp(52px,7vw,108px)', lineHeight:.92, letterSpacing:'.02em', color:heading }}>
-                CREATED<br /><span style={{ WebkitTextStroke:`1px ${cfg.acc}`, color:'transparent' }}>& SHIPPED</span>
+                MADE<br /><span style={{ WebkitTextStroke:`1px ${cfg.acc}`, color:'transparent' }}>IN MOTION</span>
               </h2>
               <div style={{ textAlign:'right' }}>
-                <div style={{ fontFamily:'Space Mono', fontSize:9, color:tx('rgba(255,255,255,0.28)','rgba(0,0,0,0.38)',isDark), letterSpacing:'.12em' }}>{WORKS.length} WORKS</div>
+                <div style={{ fontFamily:'Space Mono', fontSize:9, color:tx('rgba(255,255,255,0.28)','rgba(0,0,0,0.38)',isDark), letterSpacing:'.12em' }}>{WORKS.length} STUDIES</div>
                 <div style={{ fontFamily:'Noto Sans JP', fontWeight:900, fontSize:13, color:tx('rgba(255,255,255,0.12)','rgba(0,0,0,0.15)',isDark), marginTop:2 }}>選ばれた作品</div>
               </div>
             </div>
             <p style={{ marginTop:14, maxWidth:640, fontFamily:'Space Mono', fontSize:11, lineHeight:1.9, color:tx('rgba(255,255,255,0.42)','rgba(0,0,0,0.58)',isDark) }}>
-              A curated selection of environments across four world states...
+              A selected body of image, motion, sound, and system studies arranged by medium.
             </p>
           </div>
           {CATEGORIES.map(cat => (

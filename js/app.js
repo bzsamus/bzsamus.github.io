@@ -161,7 +161,15 @@ function App() {
         onComplete={() => setPortalTarget(null)}
       />
 
-      <Nav name={name} mode={mode} onAnchor={handleNavAnchor} isDark={isDark} setIsDark={setIsDark} isHome={renderedRoute === HOME_ROUTE} />
+      <Nav
+        name={name}
+        mode={mode}
+        onAnchor={handleNavAnchor}
+        onHome={() => navigateToRoute(HOME_ROUTE)}
+        isDark={isDark}
+        setIsDark={setIsDark}
+        isHome={renderedRoute === HOME_ROUTE}
+      />
 
       {renderedRoute === HOME_ROUTE && (
         <div style={{ position:'relative', zIndex:7 }}>

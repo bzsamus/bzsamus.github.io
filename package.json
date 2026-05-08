@@ -1,0 +1,6 @@
+{
+  "scripts": {
+    "dev": "python3 scripts/dev-server.py",
+    "dev:host": "python3 scripts/dev-server.py --host 0.0.0.0"
+  }
+}

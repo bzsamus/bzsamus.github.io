@@ -28,10 +28,10 @@ function WorldStateSelector({ isDark, onSelectRoute }) {
     <section style={{ padding:'92px 32px 84px', borderTop:'1px solid rgba(255,255,255,0.08)' }}>
       <div style={{ maxWidth:1200, margin:'0 auto' }}>
         <h2 style={{ fontFamily:'Bebas Neue', fontSize:'clamp(52px,7vw,110px)', lineHeight:.9, letterSpacing:'.03em', textAlign:'center', color:isDark ? '#f0ece4' : '#1a1a1a' }}>
-          Select a World State
+          Enter a Visual State
         </h2>
         <p style={{ margin:'16px auto 38px', maxWidth:680, textAlign:'center', fontFamily:'Space Mono', fontSize:12, lineHeight:1.8, color:tx('rgba(255,255,255,0.48)','rgba(0,0,0,0.58)',isDark) }}>
-          A collection of cinematic environments exploring the evolution of worlds.
+          Four atmospheres drawn from memory, machinery, overgrowth, and distant light.
         </p>
 
         <div style={{ display:'grid', gridTemplateColumns:'repeat(auto-fit,minmax(220px,1fr))', gap:16 }}>
@@ -283,7 +283,7 @@ function WorldStatePage({ worldKey, isDark, onNavigate }) {
       <section style={{ borderTop:'1px solid rgba(255,255,255,0.08)' }}>
         <div style={{ maxWidth:1200, margin:'0 auto', padding:'80px 32px 60px' }}>
           <div style={{ fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.2em', textTransform:'uppercase', marginBottom:18 }}>
-            About this world
+            Notes on this state
           </div>
           <p style={{ margin:0, maxWidth:780, fontFamily:'Space Mono', fontSize:13, lineHeight:1.95, color:bodyText }}>
             {bodyCopy}
@@ -296,10 +296,10 @@ function WorldStatePage({ worldKey, isDark, onNavigate }) {
         <section style={{ borderTop:`1px solid ${tx(cfg.acc+'18',cfg.acc+'28',isDark)}` }}>
           <div style={{ padding:'72px 32px 24px' }}>
             <div style={{ fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.2em', textTransform:'uppercase', marginBottom:14 }}>
-              Works · {String(worldWorks.length).padStart(2,'0')} pieces in {meta.label}
+              Archive · {String(worldWorks.length).padStart(2,'0')} studies in {meta.label}
             </div>
             <h2 style={{ fontFamily:'Bebas Neue', fontSize:'clamp(48px,7vw,96px)', lineHeight:.9, letterSpacing:'.03em', margin:0, color:baseText }}>
-              ART FROM THIS<br /><span style={{ color:cfg.acc }}>WORLD STATE.</span>
+              STUDIES FROM<br /><span style={{ color:cfg.acc }}>THIS STATE.</span>
             </h2>
           </div>
           <div>
@@ -323,11 +323,11 @@ function WorldStatePage({ worldKey, isDark, onNavigate }) {
           </a>
           <a
             href="/"
-            aria-label="Back to Home"
+            aria-label="Return Home"
             onClick={(e) => { e.preventDefault(); onNavigate(HOME_ROUTE); }}
             style={{ border:`1px solid ${cfg.acc}55`, background:`${cfg.acc}16`, color:baseText, fontFamily:'Space Mono', fontSize:11, letterSpacing:'.12em', textTransform:'uppercase', padding:'12px 16px', cursor:'pointer', textDecoration:'none' }}
           >
-            Back to Home
+            Return Home
           </a>
           <a
             href={`/${nextKey}`}
@@ -409,10 +409,10 @@ function StatsBar({ mode, isDark }) {
   const [counts, setCounts] = useState([0,0,0,0]);
   const targets = [9, 5, 4, 6];
   const stats = [
-    { label:'PROJECTS',    jp:'作品', suffix:'' },
+    { label:'STUDIES',     jp:'作品', suffix:'' },
     { label:'YEARS',       jp:'年間', suffix:'+' },
     { label:'MEDIUMS',     jp:'表現', suffix:'' },
-    { label:'EXPERIMENTS', jp:'実験', suffix:'' },
+    { label:'SKETCHES',    jp:'実験', suffix:'' },
   ];
   useEffect(() => {
     const el = ref.current; if (!el) return;
@@ -469,14 +469,14 @@ function AboutSection({ name, mode, isDark }) {
         <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'60px 80px', alignItems:'start' }}>
           <div>
             <h2 style={{ fontFamily:'Bebas Neue', fontSize:'clamp(52px,6vw,96px)', lineHeight:.9, letterSpacing:'.02em', color:heading, marginBottom:20 }}>
-              WORLDS<br />BUILT<br /><span style={{ color:cfg.acc }}>BY HAND.</span>
+              WORLDS<br />MADE<br /><span style={{ color:cfg.acc }}>BY HAND.</span>
             </h2>
             <div style={{ fontFamily:'Noto Sans JP', fontWeight:900, fontSize:20, color:`${cfg.acc}44`, marginBottom:28 }}>手で作られた世界。</div>
             <p style={{ fontFamily:'Space Mono', fontSize:11, color:body, lineHeight:2, marginBottom:14 }}>
-              I create cinematic environments that explore how worlds evolve over time...
+              I make visual worlds where light, code, motion, and sound are treated as the same material.
             </p>
             <p style={{ fontFamily:'Space Mono', fontSize:11, color:body, lineHeight:2 }}>
-              Inspired by light through leaves, water at dusk, and structures slowly swallowed by nature. Every pixel placed with intent.
+              The work begins with a feeling: a garden after rain, a city humming at night, a ruin becoming green again. Each image is composed to feel lived in, not simply rendered.
             </p>
           </div>
           <div>
@@ -543,7 +543,7 @@ function ExperimentsSection({ mode, isDark }) {
   return (
     <section style={{ padding:'80px 32px', borderTop:`1px solid ${tx(cfg.acc+'18',cfg.acc+'28',isDark)}` }}>
       <div ref={ref} className="rv">
-        <div style={{ fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.2em', textTransform:'uppercase', marginBottom:48 }}>005 / EXPERIMENTS_</div>
+        <div style={{ fontFamily:'Space Mono', fontSize:10, color:cfg.acc, letterSpacing:'.2em', textTransform:'uppercase', marginBottom:48 }}>005 / STUDIES_</div>
         <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:1, background:`${cfg.acc}20` }}>
           {exps.map((e,i) => (
             <div key={i} style={{ background:bg, padding:'22px 18px', cursor:'pointer', position:'relative', overflow:'hidden', transition:'background .25s' }}
@@ -582,7 +582,7 @@ function ContactSection({ name, mode, isDark }) {
           REACH<br /><span style={{ WebkitTextStroke:`1px ${cfg.acc}`, color:'transparent' }}>OUT_</span>
         </h2>
         <p style={{ margin:'-30px 0 30px', maxWidth:680, fontFamily:'Space Mono', fontSize:11, lineHeight:1.9, color:tx('rgba(255,255,255,0.42)','rgba(0,0,0,0.58)',isDark) }}>
-          Open to collaborations involving visual storytelling and worldbuilding.
+          Open to commissions, collaborations, and visual systems with a strong sense of place.
         </p>
         <div>
           {links.map((l,i) => (

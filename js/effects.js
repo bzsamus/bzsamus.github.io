@@ -8,7 +8,7 @@ function ArtworkSlideshowBG({ mode, isDark }) {
     { img: modeImgs[startIdx], animKey: 0 },
     { img: modeImgs[(startIdx + 1) % modeImgs.length], animKey: 1 },
   ]);
-  const nextRef = useRef((startIdx + 2) % modeImgs.length);
+  const nextRef = useRef((startIdx + 1) % modeImgs.length);
 
   useEffect(() => {
     const imgs = MODE_ART[mode];
@@ -18,7 +18,7 @@ function ArtworkSlideshowBG({ mode, isDark }) {
       { img: imgs[start], animKey: Date.now() },
       { img: imgs[(start + 1) % imgs.length], animKey: Date.now() + 1 },
     ]);
-    nextRef.current = (start + 2) % imgs.length;
+    nextRef.current = (start + 1) % imgs.length;
   }, [mode]);
 
   useEffect(() => {
