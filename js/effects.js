@@ -81,7 +81,7 @@ function WeatherCanvas({ mode, isDark }) {
     resize();
     window.addEventListener('resize', resize);
 
-    const MAX = isMobile ? 28 : 55;
+    const MAX = !ALLOW_EXPENSIVE_EFFECTS ? 0 : (isMobile ? 18 : 40);
 
     const mkParticle = (ox, oy) => {
       const { mode: m, isDark: dk } = stRef.current;
@@ -331,7 +331,7 @@ function CustomCursor({ mode }) {
   useEffect(() => { modeRef.current = mode; }, [mode]);
 
   useEffect(() => {
-    if (navigator.maxTouchPoints > 0) return;
+    if (navigator.maxTouchPoints > 0 || !ALLOW_EXPENSIVE_EFFECTS) return;
     document.documentElement.classList.add('has-cursor');
     const onMove = e => { pos.current.tx = e.clientX; pos.current.ty = e.clientY; };
     const onOver = e => {
