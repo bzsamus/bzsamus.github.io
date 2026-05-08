@@ -9,20 +9,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Noto+Sans+JP:wght@400;700;900&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css" />
-  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
-  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
-</head>
+  <link rel="preload" as="image" href="assets/image/hero/bloom_A_painterly_anime_illustration_style_reminiscent_of_Stu_294dec26-a406-457f-afee-fa5eb74ce5b8_3.webp" />
+  <link rel="stylesheet" href="dist/styles.bundle.css" />
+      </head>
 <body>
 <div id="root"></div>
-<!-- Load order matters: data → hooks → effects → layout → sections → works → app -->
-<script type="text/babel" src="js/data.js"></script>
-<script type="text/babel" src="js/hooks.js"></script>
-<script type="text/babel" src="js/effects.js"></script>
-<script type="text/babel" src="js/layout.js"></script>
-<script type="text/babel" src="js/sections.js"></script>
-<script type="text/babel" src="js/works.js"></script>
-<script type="text/babel" src="js/app.js"></script>
+<script defer src="dist/app.bundle.js"></script>
 </body>
 </html>

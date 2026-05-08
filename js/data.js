@@ -18,6 +18,11 @@ const INITIAL_MODE = MODE_KEYS[Math.floor(Math.random() * MODE_KEYS.length)];
 const HOME_ROUTE = 'home';
 const ROUTE_KEYS = [HOME_ROUTE, ...MODE_KEYS];
 
+
+const PREFERS_REDUCED_MOTION = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const LOW_END_DEVICE = (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || (navigator.deviceMemory && navigator.deviceMemory <= 4);
+const ALLOW_EXPENSIVE_EFFECTS = !(PREFERS_REDUCED_MOTION || LOW_END_DEVICE);
+
 /* ── Hero background images (assets/image/hero/) ────────────────────────── */
 const WORLD_ART = {
   bloom: [
@@ -46,7 +51,7 @@ const WORLD_ART = {
   ],
 };
 const ART_IMGS = WORLD_ORDER.flatMap(worldKey => WORLD_ART[worldKey]);
-ART_IMGS.forEach(s => { const i = new Image(); i.src = s; });
+if (ALLOW_EXPENSIVE_EFFECTS) { ART_IMGS.forEach(s => { const i = new Image(); i.src = s; }); }
 
 /* ── Slideshow index sets (ArtworkSlideshowBG dependency) ──────────────── */
 const MODE_ART = WORLD_ORDER.reduce((acc, worldKey, worldIdx) => {
